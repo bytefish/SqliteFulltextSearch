@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ElasticsearchFulltextExample.Web.Client\SqliteFulltextExample.Web.Client.csproj" />
+    <ProjectReference Include="..\SqliteFulltextSearch.Web.Client\SqliteFulltextSearch.Web.Client.csproj" />
   </ItemGroup>
 
   <ItemGroup>

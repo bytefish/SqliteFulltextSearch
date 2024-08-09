@@ -25,10 +25,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\ElasticsearchFulltextExample.Shared\SqliteFulltextExample.Shared.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
         <Content Update="Pages\Upload.razor">
             <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
         </Content>
@@ -45,6 +41,10 @@
 
     <ItemGroup>
       <Folder Include="wwwroot\images\240\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SqliteFulltextSearch.Shared\SqliteFulltextSearch.Shared.csproj" />
     </ItemGroup>
 
 

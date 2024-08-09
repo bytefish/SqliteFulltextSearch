@@ -28,8 +28,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\ElasticsearchFulltextExample.Database\ElasticsearchFulltextExample.Database.csproj" />
-        <ProjectReference Include="..\ElasticsearchFulltextExample.Shared\ElasticsearchFulltextExample.Shared.csproj" />
+      <ProjectReference Include="..\SqliteFulltextSearch.Database\SqliteFulltextSearch.Database.csproj" />
+      <ProjectReference Include="..\SqliteFulltextSearch.Shared\SqliteFulltextSearch.Shared.csproj" />
     </ItemGroup>
 
 </Project>
