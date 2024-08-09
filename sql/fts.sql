@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS document (
     valid_to text null default '9999-12-31',
     CONSTRAINT document_last_edited_by_fkey 
         FOREIGN KEY (last_edited_by)
-        REFERENCES user(user_id), 
+        REFERENCES user(user_id)
 
 );
 
@@ -38,12 +38,9 @@ CREATE TABLE IF NOT EXISTS keyword (
     row_version integer default 1,
     valid_from text not null default (strftime('%Y-%m-%d %H:%M:%f', 'now')),
     valid_to text null default '9999-12-31',
-    CONSTRAINT keyword_pkey
-        PRIMARY KEY (keyword_id),
     CONSTRAINT keyword_last_edited_by_fkey 
         FOREIGN KEY (last_edited_by)
-        REFERENCES user(user_id),
-    CHECK (length(name) <= 255)
+        REFERENCES user(user_id)
 );
 
 CREATE TABLE IF NOT EXISTS suggestion (
@@ -53,8 +50,6 @@ CREATE TABLE IF NOT EXISTS suggestion (
     row_version integer default 1,
     valid_from text not null default (strftime('%Y-%m-%d %H:%M:%f', 'now')),
     valid_to text null default '9999-12-31',
-    CONSTRAINT suggestion_pkey
-        PRIMARY KEY (suggestion_id),
     CONSTRAINT suggestion_last_edited_by_fkey 
         FOREIGN KEY (last_edited_by)
         REFERENCES user(user_id),
@@ -128,9 +123,9 @@ CREATE TABLE IF NOT EXISTS user_history (
 
 CREATE TABLE IF NOT EXISTS document_history (
     document_id integer,
-    title varchar(2000) not null,
-    filename varchar(2000) not null,
-    data blob not null,
+    title text not null,
+    filename text not null,
+    data blob null,
     last_edited_by integer not null,
     row_version integer,
     valid_from text not null,
@@ -139,7 +134,7 @@ CREATE TABLE IF NOT EXISTS document_history (
 
 CREATE TABLE IF NOT EXISTS keyword_history (
     keyword_id integer,
-    name varchar(255) not null,
+    name text not null,
     last_edited_by integer not null,
     row_version integer,
     valid_from text not null,
@@ -148,7 +143,7 @@ CREATE TABLE IF NOT EXISTS keyword_history (
 
 CREATE TABLE IF NOT EXISTS suggestion_history (
     suggestion_id integer,
-    name varchar(255) not null,
+    name text not null,
     last_edited_by integer not null,
     row_version integer,
     valid_from text not null,
@@ -225,7 +220,7 @@ END;
 
 -- History Triggers "document"
 CREATE TRIGGER document_insert_trigger
-    AFTER INSERT ON document
+    AFTER INSERT ON document FOR EACH ROW
 BEGIN
 
     UPDATE 
@@ -238,7 +233,7 @@ BEGIN
 END;
 
 CREATE TRIGGER document_versioning_update_trigger
-    AFTER UPDATE ON document
+    AFTER UPDATE ON document FOR EACH ROW
 BEGIN
 
     INSERT INTO 
@@ -260,7 +255,7 @@ BEGIN
 END;
 
 CREATE TRIGGER document_versioning_delete_trigger
-    AFTER DELETE ON document
+    AFTER DELETE ON document FOR EACH ROW
 BEGIN
     INSERT INTO 
         document_history(document_id, title, filename, data, last_edited_by, row_version, valid_from, valid_to)
@@ -270,29 +265,33 @@ END;
 
 -- History Triggers "keyword"
 CREATE TRIGGER keyword_versioning_insert_trigger
-    AFTER INSERT ON keyword
+    AFTER INSERT ON keyword FOR EACH ROW
 BEGIN
 
     UPDATE 
-        keyword
+        document
     SET 
         row_version = row_version + 1
     WHERE 
         rowid = NEW.rowid;
-
+        
 END;
 
+
 CREATE TRIGGER keyword_versioning_update_trigger
-    AFTER UPDATE ON keyword
+    AFTER UPDATE ON keyword FOR EACH ROW
 BEGIN
 
     INSERT INTO 
         keyword_history(keyword_id, name, last_edited_by, row_version, valid_from, valid_to)
-    SELECT
+    SELECT 
         keyword_id, name, last_edited_by, row_version, valid_from, NEW.valid_to
+    FROM
+        keyword
     WHERE
         rowid = NEW.rowid;
 
+    
     UPDATE 
         keyword
     SET 
@@ -303,7 +302,7 @@ BEGIN
 END;
 
 CREATE TRIGGER keyword_versioning_delete_trigger
-    AFTER DELETE ON keyword
+    AFTER DELETE ON keyword FOR EACH ROW
 BEGIN
 
     INSERT INTO 
@@ -315,7 +314,7 @@ END;
 
 -- History Triggers "suggestion"
 CREATE TRIGGER suggestion_versioning_insert_trigger
-    AFTER INSERT ON suggestion
+    AFTER INSERT ON suggestion FOR EACH ROW
 BEGIN
 
     UPDATE 
@@ -328,7 +327,7 @@ BEGIN
 END;
 
 CREATE TRIGGER suggestion_versioning_update_trigger
-    AFTER UPDATE ON suggestion
+    AFTER UPDATE ON suggestion FOR EACH ROW
 BEGIN
 
     INSERT INTO 
@@ -350,7 +349,7 @@ BEGIN
 END;
 
 CREATE TRIGGER suggestion_versioning_delete_trigger
-    AFTER DELETE ON suggestion
+    AFTER DELETE ON suggestion FOR EACH ROW
 BEGIN
     INSERT INTO 
         suggestion_history(suggestion_id, name, last_edited_by, row_version, valid_from, valid_to)
@@ -360,7 +359,7 @@ END;
 
 -- History Triggers "document_keyword"
 CREATE TRIGGER document_keyword_versioning_insert_trigger
-    AFTER INSERT ON document_keyword
+    AFTER INSERT ON document_keyword FOR EACH ROW
 BEGIN
 
     UPDATE 
@@ -373,7 +372,7 @@ BEGIN
 END;
 
 CREATE TRIGGER document_keyword_versioning_update_trigger
-    AFTER UPDATE ON document_keyword
+    AFTER UPDATE ON document_keyword FOR EACH ROW
 BEGIN
 
     INSERT INTO 
@@ -395,7 +394,7 @@ BEGIN
 END;
 
 CREATE TRIGGER document_keyword_versioning_delete_trigger
-    AFTER DELETE ON document_keyword
+    AFTER DELETE ON document_keyword FOR EACH ROW
 BEGIN
 
     INSERT INTO 
@@ -407,7 +406,7 @@ END;
 
 -- History Triggers "document_suggestion"
 CREATE TRIGGER document_suggestion_versioning_insert_trigger
-    AFTER INSERT ON document_suggestion
+    AFTER INSERT ON document_suggestion FOR EACH ROW
 BEGIN
 
     UPDATE 
@@ -417,17 +416,18 @@ BEGIN
     WHERE 
         rowid = NEW.rowid;
 
-
 END;
 
 CREATE TRIGGER document_suggestion_versioning_update_trigger
-    AFTER UPDATE ON document_suggestion
+    AFTER UPDATE ON document_suggestion FOR EACH ROW
 BEGIN
 
     INSERT INTO 
-        document_suggestion_history(document_suggestion_id, document_id, keyword_id, last_edited_by, row_version, valid_from, valid_to)
+        document_suggestion_history(document_suggestion_id, document_id, suggestion_id, last_edited_by, row_version, valid_from, valid_to)
     SELECT
-        document_suggestion_id, document_id, keyword_id, last_edited_by, row_version, valid_from, valid_to
+        document_suggestion_id, document_id, suggestion_id, last_edited_by, row_version, valid_from, NEW.valid_to
+    FROM 
+        document_suggestion
     WHERE
         rowid = NEW.rowid;
 
@@ -441,13 +441,13 @@ BEGIN
 END;
 
 CREATE TRIGGER document_suggestion_versioning_delete_trigger
-    AFTER DELETE ON document_suggestion
+    AFTER DELETE ON document_suggestion FOR EACH ROW
 BEGIN
 
     INSERT INTO 
-        document_suggestion_history(document_suggestion_id, document_id, keyword_id, last_edited_by, row_version, valid_from, valid_to)
+        document_suggestion_history(document_suggestion_id, document_id, suggestion_id, last_edited_by, row_version, valid_from, valid_to)
     SELECT
-        OLD.document_suggestion_id, OLD.document_id, OLD.keyword_id, OLD.last_edited_by, OLD.row_version, OLD.valid_from,  strftime('%Y-%m-%d %H:%M:%f', 'now');
+        OLD.document_suggestion_id, OLD.document_id, OLD.suggestion_id, OLD.last_edited_by, OLD.row_version, OLD.valid_from,  strftime('%Y-%m-%d %H:%M:%f', 'now');
 
 END;
 
@@ -460,18 +460,50 @@ INSERT INTO user(user_id, email, preferred_name, last_edited_by)
     VALUES 
         (1, 'philipp@bytefish.de', 'Data Conversion User', 1);
 
+-- Document "Machine Learning with OpenCV"
 INSERT INTO 
-    document
+    document(document_id, title, filename, last_edited_by)
 VALUES 
-    (1, 'Machine Learning with OpenCV', 'machinelearning.pdf');
+    (1, 'Machine Learning with OpenCV', 'machinelearning.pdf', 1);
     
 INSERT INTO 
-    fts_document
+    keyword(keyword_id, name, last_edited_by)
+VALUES 
+    (1, 'Machine Learning', 1);
+    
+INSERT INTO 
+    keyword(keyword_id, name, last_edited_by)
+VALUES 
+    (3, 'OpenCV', 1);
+    
+INSERT INTO 
+    document_keyword(document_keyword_id, document_id, keyword_id, last_edited_by)
+VALUES 
+    (1, 1, 1, 1);
+    
+INSERT INTO 
+    document_keyword(document_keyword_id, document_id, keyword_id, last_edited_by)
+VALUES 
+    (2, 1, 2, 1);
+    
+INSERT INTO 
+    suggestion(suggestion_id, name, last_edited_by)
+VALUES 
+    (1, 'Machine Learning with OpenCV', 1);
+    
+INSERT INTO 
+    document_suggestion(document_suggestion_id, document_id, suggestion_id, last_edited_by)
+VALUES 
+    (1, 1, 1, 1);
+
+-- Insert document data        
+INSERT INTO 
+    fts_document(rowid, title, content)
 VALUES
-    ('Machine Learning with OpenCV', concat('This document covers the Machine Learning API of the OpenCV2 C++ API.'
+    (1, 'Machine Learning with OpenCV', concat('This document covers the Machine Learning API of the OpenCV2 C++ API.'
             ,' It helps you with setting up your system, gives a brief introduction into Support Vector Machines'
             ,' and Neural Networks and shows how it’s implemented with OpenCV.')),
-    ('Face Recognition with GNU Octave/MATLAB', concat('In this document I’ll show you how to implement the Eigenfaces [13] and Fisherfaces [3] method'
+    (2, 'Face Recognition with GNU Octave/MATLAB', concat('In this document I’ll show you how to implement the Eigenfaces [13] and Fisherfaces [3] method'
             ,' with GNU Octave/MATLAB , so you’ll understand the basics of Face Recognition. All concepts'
             , ' are explained in detail, but a basic knowledge of GNU Octave/MATLAB is assumed.'));
             
