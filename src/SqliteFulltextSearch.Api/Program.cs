@@ -12,17 +12,12 @@ using NodaTime.Serialization.SystemTextJson;
 using NodaTime;
 using Microsoft.AspNetCore.Authentication;
 using ElasticsearchFulltextExample.Api.Constants;
-using ElasticsearchFulltextExample.Api.Infrastructure.Mvc;
-using ElasticsearchFulltextExample.Database.Model;
 using ElasticsearchFulltextExample.Api.Infrastructure.Errors;
 using ElasticsearchFulltextExample.Api.Infrastructure.Errors.Translators;
 using ElasticsearchFulltextExample.Api.Infrastructure.Authentication;
-using ElasticsearchFulltextExample.Api.Hosting;
 using ElasticsearchFulltextExample.Api.Configuration;
 using ElasticsearchFulltextExample.Database;
 using ElasticsearchFulltextExample.Api.Services;
-using ElasticsearchFulltextExample.Api.Infrastructure.Elasticsearch;
-using ElasticsearchFulltextExample.Api.Infrastructure.Outbox.Consumer;
 
 public partial class Program {
     private static async Task Main(string[] args)
@@ -89,25 +84,6 @@ public partial class Program {
                     .UseNpgsql(dataSource, options => options.UseNodaTime());
             });
 
-            // Elasticsearch
-            builder.Services.AddHostedService<ElasticsearchInitializerBackgroundService>();
-
-            // Configures the Postgres Outbox Event Settings.
-            builder.Services.AddSingleton<OutboxEventConsumer>();
-
-            builder.Services.Configure<PostgresOutboxEventProcessorOptions>(o =>
-            {
-                var connectionString = builder.Configuration.GetConnectionString("ApplicationDatabase")!;
-
-                o.ConnectionString = connectionString;
-                o.PublicationName = "outbox_pub";
-                o.ReplicationSlotName = "outbox_slot";
-                o.OutboxEventSchemaName = "fts";
-                o.OutboxEventTableName = "outbox_event";
-            });
-
-            builder.Services.AddHostedService<PostgresOutboxEventProcessor>();
-
             // Authentication
             builder.Services.AddScoped<CurrentUser>();
             builder.Services.AddScoped<IClaimsTransformation, CurrentUserClaimsTransformation>();
@@ -136,7 +112,7 @@ public partial class Program {
             builder.Services.AddSingleton<IExceptionTranslator, ApplicationErrorExceptionTranslator>();
             builder.Services.AddSingleton<IExceptionTranslator, InvalidModelStateExceptionTranslator>();
 
-            builder.Services.Configure<ExceptionToApplicationErrorMapperOptions>(o =>
+            builder.Services.Configure<ExceptionToErrorMapperOptions>(o =>
             {
                 o.IncludeExceptionDetails = builder.Environment.IsDevelopment() || builder.Environment.IsStaging();
             });

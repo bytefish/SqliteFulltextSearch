@@ -50,6 +50,10 @@ namespace ElasticsearchFulltextExample.Api.Services
                     .AddAsync(document, cancellationToken)
                     .ConfigureAwait(false);
 
+                await context
+                    .SaveChangesAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
                 // Add Suggestions
                 if (suggestions != null)
                 {
@@ -71,6 +75,10 @@ namespace ElasticsearchFulltextExample.Api.Services
                             await context
                                 .AddAsync(suggestion, cancellationToken)
                                 .ConfigureAwait(false);
+
+                            await context
+                                .SaveChangesAsync(cancellationToken)
+                                .ConfigureAwait(false);
                         }
 
                         var documentSuggestion = new DocumentSuggestion
@@ -82,6 +90,10 @@ namespace ElasticsearchFulltextExample.Api.Services
 
                         await context
                             .AddAsync(documentSuggestion, cancellationToken)
+                            .ConfigureAwait(false);
+
+                        await context
+                            .SaveChangesAsync(cancellationToken)
                             .ConfigureAwait(false);
                     }
                 }
@@ -107,6 +119,11 @@ namespace ElasticsearchFulltextExample.Api.Services
                             await context
                                 .AddAsync(keyword, cancellationToken)
                                 .ConfigureAwait(false);
+
+
+                            await context
+                                .SaveChangesAsync(cancellationToken)
+                                .ConfigureAwait(false);
                         }
 
                         var documentKeyword = new DocumentKeyword
@@ -119,21 +136,12 @@ namespace ElasticsearchFulltextExample.Api.Services
                         await context
                             .AddAsync(documentKeyword, cancellationToken)
                             .ConfigureAwait(false);
+
+                        await context
+                            .SaveChangesAsync(cancellationToken)
+                            .ConfigureAwait(false);
                     }
                 }
-
-                // Create the Outbox Event to notify about Document Creation. This will 
-                // kick off the Elasticsearch Indexing process or whatever is required.
-                var outboxEvent = OutboxEventUtils.Create(new DocumentCreatedMessage
-                {
-                    DocumentId = document.Id
-                }, lastEditedBy);
-
-                await context
-                    .AddAsync(outboxEvent, cancellationToken)
-                    .ConfigureAwait(false);
-
-                await context.SaveChangesAsync(cancellationToken);
 
                 // Commit the Transaction
                 await transaction

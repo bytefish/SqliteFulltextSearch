@@ -4,8 +4,6 @@ using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Core.Search;
 using Elastic.Clients.Elasticsearch.IndexManagement;
 using ElasticsearchFulltextExample.Api.Configuration;
-using ElasticsearchFulltextExample.Api.Infrastructure.Elasticsearch;
-using ElasticsearchFulltextExample.Api.Infrastructure.Elasticsearch.Models;
 using ElasticsearchFulltextExample.Api.Infrastructure.Exceptions;
 using ElasticsearchFulltextExample.Api.Models;
 using ElasticsearchFulltextExample.Database;
@@ -17,59 +15,23 @@ using System.Globalization;
 
 namespace ElasticsearchFulltextExample.Api.Services
 {
-    public class ElasticsearchService
+    public class SqliteSearchService
     {
-        private readonly ILogger<ElasticsearchService> _logger;
+        private readonly ILogger<SqliteSearchService> _logger;
 
         private readonly ApplicationOptions _options;
         private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory;
-        private readonly ElasticsearchSearchClient _elasticsearchSearchClient;
 
-        public ElasticsearchService(ILogger<ElasticsearchService> logger, IOptions<ApplicationOptions> options, IDbContextFactory<ApplicationDbContext> dbContextFactory, ElasticsearchSearchClient elasticsearchClient)
+        public SqliteSearchService(ILogger<SqliteSearchService> logger, IOptions<ApplicationOptions> options, IDbContextFactory<ApplicationDbContext> dbContextFactory)
         {
             _logger = logger;
             _options = options.Value;
             _dbContextFactory = dbContextFactory;
-            _elasticsearchSearchClient = elasticsearchClient;
-        }
-
-        public async Task CreateIndexAsync(CancellationToken cancellationToken)
-        {
-            _logger.TraceMethodEntry();
-
-            await _elasticsearchSearchClient
-                .CreateIndexAsync(cancellationToken)
-                .ConfigureAwait(false);
-        }
-
-        public async Task CreatePipelineAsync(CancellationToken cancellationToken)
-        {
-            _logger.TraceMethodEntry();
-
-            await _elasticsearchSearchClient
-                .CreatePipelineAsync(cancellationToken)
-                .ConfigureAwait(false);
         }
 
         public async Task DeleteAllAsync(CancellationToken cancellationToken)
         {
             _logger.TraceMethodEntry();
-
-            await _elasticsearchSearchClient.DeleteAllAsync(cancellationToken);
-        }
-
-        public async Task DeleteIndexAsync(CancellationToken cancellationToken)
-        {
-            _logger.TraceMethodEntry();
-
-            await _elasticsearchSearchClient.DeleteIndexAsync(cancellationToken);
-        }
-
-        public async Task DeletePipelineAsync(string pipeline, CancellationToken cancellationToken)
-        {
-            _logger.TraceMethodEntry();
-
-            await _elasticsearchSearchClient.DeletePipelineAsync(pipeline, cancellationToken);
         }
 
         public async Task IndexDocumentAsync(int documentId, CancellationToken cancellationToken)
@@ -101,25 +63,7 @@ namespace ElasticsearchFulltextExample.Api.Services
             var suggestions = await GetSuggestionsByDocumentId(context, documentId, cancellationToken)
                 .ConfigureAwait(false);
 
-            // Build the Document to send to Elasticsearch
-            var elasticsearchDocument = new ElasticsearchDocument
-            {
-                Id = document.Id.ToString(),
-                Title = document.Title,
-                Filename = document.Filename,
-                Suggestions = suggestions
-                    .Select(x => x.Name)
-                    .ToArray(),
-                Keywords = keywords
-                    .Select(x => x.Name)
-                    .ToArray(),
-                Data = document.Data,
-                IndexedOn = null, // Will be set after indexing ...
-                Attachment = null // Will be set after indexing ...
-            };
-
-            // Send to Elasticsearch for indexing
-            await _elasticsearchSearchClient.IndexAsync(elasticsearchDocument, cancellationToken);
+            // Index the document ...
 
             // Update the IndexedAt Timestamp
             await context.Documents
