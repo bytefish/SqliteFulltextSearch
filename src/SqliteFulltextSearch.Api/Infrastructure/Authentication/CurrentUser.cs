@@ -1,6 +1,6 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using ElasticsearchFulltextExample.Database.Model;
+using SqliteFulltextSearch.Database.Model;
 using System.Security.Claims;
 
 namespace ElasticsearchFulltextExample.Api.Infrastructure.Authentication

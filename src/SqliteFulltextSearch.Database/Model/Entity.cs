@@ -1,6 +1,6 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace ElasticsearchFulltextExample.Database.Model
+namespace SqliteFulltextSearch.Database.Model
 {
     public abstract class Entity
     {

@@ -454,3 +454,7 @@ BEGIN
         OLD.document_suggestion_id, OLD.document_id, OLD.keyword_id, OLD.last_edited_by, OLD.row_version, OLD.valid_from,  strftime('%Y-%m-%d %H:%M:%f', 'now');
 
 END;
+
+-- FTS5 Document Search Table
+CREATE VIRTUAL TABLE fts_document 
+    USING fts5(title, content);

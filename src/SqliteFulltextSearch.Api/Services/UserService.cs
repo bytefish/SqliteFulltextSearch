@@ -3,10 +3,10 @@
 using ElasticsearchFulltextExample.Api.Constants;
 using ElasticsearchFulltextExample.Api.Infrastructure.Authentication;
 using ElasticsearchFulltextExample.Api.Infrastructure.Exceptions;
-using ElasticsearchFulltextExample.Database;
-using ElasticsearchFulltextExample.Database.Model;
 using ElasticsearchFulltextExample.Shared.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using SqliteFulltextSearch.Database;
+using SqliteFulltextSearch.Database.Model;
 using System.Security.Claims;
 
 namespace ElasticsearchFulltextExample.Api.Services
