@@ -33,7 +33,8 @@ CREATE TABLE IF NOT EXISTS document (
 
 CREATE TABLE IF NOT EXISTS keyword (
     keyword_id integer PRIMARY KEY AUTOINCREMENT,
-    name text not null,
+    name text not null
+        CHECK (length(preferred_name) <= 255),
     last_edited_by integer not null,
     row_version integer default 1,
     valid_from text not null default (strftime('%Y-%m-%d %H:%M:%f', 'now')),
@@ -45,7 +46,8 @@ CREATE TABLE IF NOT EXISTS keyword (
 
 CREATE TABLE IF NOT EXISTS suggestion (
     suggestion_id integer PRIMARY KEY AUTOINCREMENT,
-    name text not null,
+    name text not null
+        CHECK (length(preferred_name) <= 255),
     last_edited_by integer not null,
     row_version integer default 1,
     valid_from text not null default (strftime('%Y-%m-%d %H:%M:%f', 'now')),
