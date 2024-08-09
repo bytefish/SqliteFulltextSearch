@@ -4,20 +4,17 @@ using Serilog.Filters;
 using Serilog.Sinks.SystemConsole.Themes;
 using Serilog;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using NodaTime.Serialization.SystemTextJson;
-using NodaTime;
 using Microsoft.AspNetCore.Authentication;
 using ElasticsearchFulltextExample.Api.Constants;
 using ElasticsearchFulltextExample.Api.Infrastructure.Errors;
 using ElasticsearchFulltextExample.Api.Infrastructure.Errors.Translators;
 using ElasticsearchFulltextExample.Api.Infrastructure.Authentication;
 using ElasticsearchFulltextExample.Api.Configuration;
-using ElasticsearchFulltextExample.Database;
 using ElasticsearchFulltextExample.Api.Services;
+using SqliteFulltextSearch.Database;
 
 public partial class Program {
     private static async Task Main(string[] args)
@@ -53,36 +50,13 @@ public partial class Program {
             builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
 
             // Database
-            builder.Services.AddSingleton((sp) =>
-            {
-                var connectionString = builder.Configuration.GetConnectionString("ApplicationDatabase");
-
-                if (connectionString == null)
-                {
-                    throw new InvalidOperationException("No ConnectionString named 'ApplicationDatabase' was found");
-                }
-
-                // Since version 7.0, NpgsqlDataSource is the recommended way to use Npgsql. When using NpsgqlDataSource,
-                // NodaTime currently has to be configured twice - once at the EF level, and once at the underlying ADO.NET
-                // level (there are plans to improve this):
-                var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
-
-                // Call UseNodaTime() when building your data source:
-                dataSourceBuilder.UseNodaTime();
-
-                return dataSourceBuilder.Build();
-            });
-
-            // Database
             builder.Services.AddDbContextFactory<ApplicationDbContext>((sp, options) =>
             {
-                var dataSource = sp.GetRequiredService<NpgsqlDataSource>();
-
-                // Then, when configuring EF Core with UseNpgsql(), call UseNodaTime() there as well:
                 options
                     .EnableSensitiveDataLogging()
-                    .UseNpgsql(dataSource, options => options.UseNodaTime());
-            });
+                    .UseSqlite();
+
+            }, ServiceLifetime.Scoped);
 
             // Authentication
             builder.Services.AddScoped<CurrentUser>();
@@ -127,17 +101,13 @@ public partial class Program {
 
             builder.Services.Configure<ApplicationOptions>(builder.Configuration.GetSection("Application"));
 
-            builder.Services.Configure<ElasticsearchSearchClientOptions>(builder.Configuration.GetSection("Elasticsearch"));
-            builder.Services.AddSingleton<ElasticsearchSearchClient>();
-
 
             // Route Constraints
             // ...
 
             // Controllers
             builder.Services
-                .AddControllers()
-                .AddJsonOptions(c => c.JsonSerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb));
+                .AddControllers();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

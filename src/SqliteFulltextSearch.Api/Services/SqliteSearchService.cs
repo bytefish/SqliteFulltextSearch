@@ -6,11 +6,11 @@ using Elastic.Clients.Elasticsearch.IndexManagement;
 using ElasticsearchFulltextExample.Api.Configuration;
 using ElasticsearchFulltextExample.Api.Infrastructure.Exceptions;
 using ElasticsearchFulltextExample.Api.Models;
-using ElasticsearchFulltextExample.Database;
-using ElasticsearchFulltextExample.Database.Model;
 using ElasticsearchFulltextExample.Shared.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using SqliteFulltextSearch.Database;
+using SqliteFulltextSearch.Database.Model;
 using System.Globalization;
 
 namespace ElasticsearchFulltextExample.Api.Services
@@ -137,6 +137,10 @@ namespace ElasticsearchFulltextExample.Api.Services
         public async Task<SearchResults> SearchAsync(string query, int from, int size, CancellationToken cancellationToken)
         {
             _logger.TraceMethodEntry();
+
+            using var context = await _dbContextFactory
+                .CreateDbContextAsync(cancellationToken)
+                .ConfigureAwait(false);
 
             var searchResponse = await _elasticsearchSearchClient
                 .SearchAsync(query, from, size, cancellationToken)
