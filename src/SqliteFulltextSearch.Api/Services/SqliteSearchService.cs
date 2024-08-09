@@ -7,10 +7,12 @@ using ElasticsearchFulltextExample.Api.Configuration;
 using ElasticsearchFulltextExample.Api.Infrastructure.Exceptions;
 using ElasticsearchFulltextExample.Api.Models;
 using ElasticsearchFulltextExample.Shared.Infrastructure;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using SqliteFulltextSearch.Database;
 using SqliteFulltextSearch.Database.Model;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace ElasticsearchFulltextExample.Api.Services
@@ -142,11 +144,46 @@ namespace ElasticsearchFulltextExample.Api.Services
                 .CreateDbContextAsync(cancellationToken)
                 .ConfigureAwait(false);
 
-            var searchResponse = await _elasticsearchSearchClient
-                .SearchAsync(query, from, size, cancellationToken)
-                .ConfigureAwait(false);
+            // Build the raw SQLite FTS5 Query
+            var sql = @"
+                SELECT rowid as document_id,  
+                    highlight(fts_documents, 0, '<b>', '</b>') title, 
+                    highlight(fts_documents, 1, '<b>', '</b>') content
+                FROM 
+                    fts_documents 
+                WHERE 
+                    fts_documents MATCH '{title, content}: @query' 
+                ORDER BY rank
+                LIMIT @size
+                OFFSET @from";
 
-            var searchResults = ConvertToSearchResults(query, from, size, searchResponse);
+            // Set the Query as a Parameter to avoid SQL Injections
+            var parameters = new[]
+            {
+                new SqliteParameter("@query", query),
+                new SqliteParameter("@size", size),
+                new SqliteParameter("@from", from),
+            };
+
+            // Let's measure how long it took...
+            var executionTimer = new Stopwatch();
+
+            executionTimer.Start();
+
+            var matches = await context.Database
+                .SqlQueryRaw<Document>(sql, parameters)
+                .ToListAsync();
+
+            executionTimer.Stop();
+
+            // So we know how long Sqlite took.
+            var tookInMilliseconds = executionTimer.ElapsedMilliseconds;
+            var hits = matches
+                .Skip(from)
+                .Take(size)
+                .ToList();
+
+            var searchResults = ConvertToSearchResults(query, from, size, tookInMilliseconds, hits);
 
             return searchResults;
         }
@@ -161,10 +198,7 @@ namespace ElasticsearchFulltextExample.Api.Services
         {
             _logger.TraceMethodEntry();
 
-            var suggestResponse = await _elasticsearchSearchClient
-                .SuggestAsync(query, cancellationToken)
-                .ConfigureAwait(false);
-
+            
             var searchSuggestions = ConvertToSearchSuggestions(query, suggestResponse);
 
             return searchSuggestions;
@@ -358,11 +392,9 @@ namespace ElasticsearchFulltextExample.Api.Services
         /// <param name="query">Original Query</param>
         /// <param name="searchResponse">Search Response from Elasticsearch</param>
         /// <returns>Search Results for a given Query</returns>
-        private SearchResults ConvertToSearchResults(string query, int from, int size, SearchResponse<ElasticsearchDocument> searchResponse)
+        private SearchResults ConvertToSearchResults(string query, int from, int size, long tookInMilliseconds, List<Document> hits)
         {
             _logger.TraceMethodEntry();
-
-            var hits = searchResponse.Hits;
 
             if (hits.Count == 0)
             {
@@ -372,7 +404,7 @@ namespace ElasticsearchFulltextExample.Api.Services
                     From = from,
                     Size = size,
                     Total = 0,
-                    TookInMilliseconds = searchResponse.Took,
+                    TookInMilliseconds = tookInMilliseconds,
                     Results = []
                 };
             }
