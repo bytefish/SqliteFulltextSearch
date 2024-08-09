@@ -3,19 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.34928.147
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqliteFulltextExample.Api", "src\ElasticsearchFulltextExample.Api\SqliteFulltextExample.Api.csproj", "{F2632FB9-21F8-47DA-B04E-3FC39CE514AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqliteFulltextSearch.Api", "src\SqliteFulltextSearch.Api\SqliteFulltextSearch.Api.csproj", "{6B9FC3D9-F7DB-4F5C-8E53-5DF26F573B80}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqliteFulltextExample.Shared", "src\ElasticsearchFulltextExample.Shared\SqliteFulltextExample.Shared.csproj", "{291FDB9B-B93F-4964-BF4D-7B46928DA4BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqliteFulltextSearch.Database", "src\SqliteFulltextSearch.Database\SqliteFulltextSearch.Database.csproj", "{FED0B412-D59E-48ED-A0BD-B098406CC6F2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqliteFulltextExample.Web.Client", "src\ElasticsearchFulltextExample.Web.Client\SqliteFulltextExample.Web.Client.csproj", "{757702B0-EE3C-4919-8AC4-9A919816EEED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqliteFulltextSearch.Shared", "src\SqliteFulltextSearch.Shared\SqliteFulltextSearch.Shared.csproj", "{64181E34-135A-40A9-A3AD-2576880F0C9F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqliteFulltextExample.Database", "src\ElasticsearchFulltextExample.Database\SqliteFulltextExample.Database.csproj", "{5F9FA1DA-A186-4495-8BE0-972EA624F53A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqliteFulltextSearch.Web.Client", "src\SqliteFulltextSearch.Web.Client\SqliteFulltextSearch.Web.Client.csproj", "{FD42369F-4A42-43BB-94D8-203109D91BC1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqliteFulltextExample.Web.Server", "src\ElasticsearchFulltextExample.Web.Server\SqliteFulltextExample.Web.Server.csproj", "{C1EB93D4-20AC-4635-A7B6-1454E7350787}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElasticsearchFulltextExample.AppHost", "src\ElasticsearchFulltextExample.AppHost\ElasticsearchFulltextExample.AppHost.csproj", "{9AA0D046-7E33-460D-A75C-14C3B550453D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElasticsearchFulltextExample.ServiceDefaults", "src\ElasticsearchFulltextExample.ServiceDefaults\ElasticsearchFulltextExample.ServiceDefaults.csproj", "{C36B485A-0537-45BC-9679-2AA3A4C13EC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqliteFulltextSearch.Web.Server", "src\SqliteFulltextSearch.Web.Server\SqliteFulltextSearch.Web.Server.csproj", "{ED48DDAE-3581-44DE-A892-CD0F2F9407D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,34 +19,26 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F2632FB9-21F8-47DA-B04E-3FC39CE514AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F2632FB9-21F8-47DA-B04E-3FC39CE514AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F2632FB9-21F8-47DA-B04E-3FC39CE514AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F2632FB9-21F8-47DA-B04E-3FC39CE514AC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{291FDB9B-B93F-4964-BF4D-7B46928DA4BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{291FDB9B-B93F-4964-BF4D-7B46928DA4BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{291FDB9B-B93F-4964-BF4D-7B46928DA4BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{291FDB9B-B93F-4964-BF4D-7B46928DA4BE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{757702B0-EE3C-4919-8AC4-9A919816EEED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{757702B0-EE3C-4919-8AC4-9A919816EEED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{757702B0-EE3C-4919-8AC4-9A919816EEED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{757702B0-EE3C-4919-8AC4-9A919816EEED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5F9FA1DA-A186-4495-8BE0-972EA624F53A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5F9FA1DA-A186-4495-8BE0-972EA624F53A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5F9FA1DA-A186-4495-8BE0-972EA624F53A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5F9FA1DA-A186-4495-8BE0-972EA624F53A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C1EB93D4-20AC-4635-A7B6-1454E7350787}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C1EB93D4-20AC-4635-A7B6-1454E7350787}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C1EB93D4-20AC-4635-A7B6-1454E7350787}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C1EB93D4-20AC-4635-A7B6-1454E7350787}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9AA0D046-7E33-460D-A75C-14C3B550453D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9AA0D046-7E33-460D-A75C-14C3B550453D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9AA0D046-7E33-460D-A75C-14C3B550453D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9AA0D046-7E33-460D-A75C-14C3B550453D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C36B485A-0537-45BC-9679-2AA3A4C13EC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C36B485A-0537-45BC-9679-2AA3A4C13EC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C36B485A-0537-45BC-9679-2AA3A4C13EC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C36B485A-0537-45BC-9679-2AA3A4C13EC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B9FC3D9-F7DB-4F5C-8E53-5DF26F573B80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B9FC3D9-F7DB-4F5C-8E53-5DF26F573B80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B9FC3D9-F7DB-4F5C-8E53-5DF26F573B80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B9FC3D9-F7DB-4F5C-8E53-5DF26F573B80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FED0B412-D59E-48ED-A0BD-B098406CC6F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FED0B412-D59E-48ED-A0BD-B098406CC6F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FED0B412-D59E-48ED-A0BD-B098406CC6F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FED0B412-D59E-48ED-A0BD-B098406CC6F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64181E34-135A-40A9-A3AD-2576880F0C9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64181E34-135A-40A9-A3AD-2576880F0C9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64181E34-135A-40A9-A3AD-2576880F0C9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64181E34-135A-40A9-A3AD-2576880F0C9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD42369F-4A42-43BB-94D8-203109D91BC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD42369F-4A42-43BB-94D8-203109D91BC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD42369F-4A42-43BB-94D8-203109D91BC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD42369F-4A42-43BB-94D8-203109D91BC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED48DDAE-3581-44DE-A892-CD0F2F9407D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED48DDAE-3581-44DE-A892-CD0F2F9407D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED48DDAE-3581-44DE-A892-CD0F2F9407D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED48DDAE-3581-44DE-A892-CD0F2F9407D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
