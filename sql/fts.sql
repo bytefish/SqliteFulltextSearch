@@ -20,9 +20,7 @@ CREATE TABLE IF NOT EXISTS document (
         CHECK (length(title) <= 1000),
     filename text not null
         CHECK (length(filename) <= 1000),
-    data blob not null,
-    uploaded_at timestamptz not null,
-    indexed_at timestamptz null,
+    data blob null,
     last_edited_by integer not null,
     row_version integer default 1,
     valid_from text not null default (strftime('%Y-%m-%d %H:%M:%f', 'now')),
@@ -133,8 +131,6 @@ CREATE TABLE IF NOT EXISTS document_history (
     title varchar(2000) not null,
     filename varchar(2000) not null,
     data blob not null,
-    uploaded_at timestamptz not null,
-    indexed_at timestamptz null,
     last_edited_by integer not null,
     row_version integer,
     valid_from text not null,
@@ -246,9 +242,9 @@ CREATE TRIGGER document_versioning_update_trigger
 BEGIN
 
     INSERT INTO 
-        document_history(document_id, title, filename, data, uploaded_at, last_edited_by, row_version, valid_from, valid_to)
+        document_history(document_id, title, filename, data, last_edited_by, row_version, valid_from, valid_to)
     SELECT 
-        document_id, title, filename, data, uploaded_at, last_edited_by, row_version, valid_from, NEW.valid_from
+        document_id, title, filename, data, last_edited_by, row_version, valid_from, NEW.valid_from
     FROM 
         document
     WHERE 
@@ -267,9 +263,9 @@ CREATE TRIGGER document_versioning_delete_trigger
     AFTER DELETE ON document
 BEGIN
     INSERT INTO 
-        document_history(document_id, title, filename, data, uploaded_at, last_edited_by, row_version, valid_from, valid_to)
+        document_history(document_id, title, filename, data, last_edited_by, row_version, valid_from, valid_to)
     SELECT
-        OLD.document_id, OLD.title, OLD.filename, OLD.data, OLD.uploaded_at, OLD.last_edited_by, OLD.row_version, OLD.valid_from, strftime('%Y-%m-%d %H:%M:%f', 'now');
+        OLD.document_id, OLD.title, OLD.filename, OLD.data, OLD.last_edited_by, OLD.row_version, OLD.valid_from, strftime('%Y-%m-%d %H:%M:%f', 'now');
 END;
 
 -- History Triggers "keyword"
@@ -458,3 +454,35 @@ END;
 -- FTS5 Document Search Table
 CREATE VIRTUAL TABLE fts_document 
     USING fts5(title, content);
+
+-- Sample Data
+INSERT INTO user(user_id, email, preferred_name, last_edited_by) 
+    VALUES 
+        (1, 'philipp@bytefish.de', 'Data Conversion User', 1);
+
+INSERT INTO 
+    document
+VALUES 
+    (1, 'Machine Learning with OpenCV', 'machinelearning.pdf');
+    
+INSERT INTO 
+    fts_document
+VALUES
+    ('Machine Learning with OpenCV', concat('This document covers the Machine Learning API of the OpenCV2 C++ API.'
+            ,' It helps you with setting up your system, gives a brief introduction into Support Vector Machines'
+            ,' and Neural Networks and shows how it’s implemented with OpenCV.')),
+    ('Face Recognition with GNU Octave/MATLAB', concat('In this document I’ll show you how to implement the Eigenfaces [13] and Fisherfaces [3] method'
+            ,' with GNU Octave/MATLAB , so you’ll understand the basics of Face Recognition. All concepts'
+            , ' are explained in detail, but a basic knowledge of GNU Octave/MATLAB is assumed.'));
+            
+-- Test Query
+SELECT rowid as document_id,  
+    snippet(fts_document, 0, 'match→', '←match', '', 32) title, 
+    snippet(fts_document, 1, 'match→', '←match', '', 32) content
+FROM 
+    fts_document
+WHERE 
+    fts_document MATCH '{title content}: OpenCV' 
+ORDER BY rank
+LIMIT 5
+OFFSET 0;
