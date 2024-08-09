@@ -22,6 +22,14 @@ namespace ElasticsearchFulltextExample.Database
 
         public DbSet<DocumentSuggestion> DocumentSuggestions { get; set; }
 
+        [DbFunction]
+        public string Highlight(string match, string column, string open, string close)
+            => throw new NotImplementedException();
+
+        [DbFunction]
+        public string Snippet(string match, string column, string open, string close, string ellips, int count)
+            => throw new NotImplementedException();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Tables
