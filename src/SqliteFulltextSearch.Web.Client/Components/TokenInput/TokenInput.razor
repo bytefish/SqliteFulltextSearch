@@ -1,0 +1,110 @@
+﻿@namespace ElasticsearchFulltextExample.Web.Client.Components
+@using Microsoft.FluentUI.AspNetCore.Components.Utilities
+
+@*
+This implementation is based upon the Component by @darthmaure at:
+
+    - https://github.com/darthmaure/blazor-autocomplete
+
+All Credit goes to @darthmaure.
+*@
+
+@inherits FluentComponentBase
+
+<div style="width: 100%">
+
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
+        <FluentTextField @attributes="@AdditionalAttributes"
+                         style="200px;"
+                         Value="@CurrentValue"
+                         @oninput=@((e) => CurrentValue = e.Value as string ?? string.Empty)
+                         @onkeydown="OnInputKeyDown"
+                         placeholder="@Placeholder"
+                         aria-autocomplete="list"
+                         aria-haspopup="true"
+                         autocomplete="off"
+                         role="combobox"
+                         aria-expanded="true">
+        </FluentTextField>
+
+        @foreach (var token in Tokens)
+        {
+            <FluentBadge Style="margin-right: 5px;" Appearance="Appearance.Neutral" OnDismissClick="@((e) => RemoveToken(token))">@token</FluentBadge>
+        }
+
+    </FluentStack>
+
+</div>
+
+@code {
+
+    /// <summary>
+    /// Gets or sets the Placeholder.
+    /// </summary>
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Minimum Text Length the Suggestions start to appear (default: 3).
+    /// </summary>
+    [Parameter]
+    public List<string> Tokens { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the Minimum Text Length the Suggestions start to appear (default: 3).
+    /// </summary>
+    [Parameter]
+    public string CurrentValue { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the callback that is invoked when the text field value changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<List<string>> TokensChanged { get; set; }
+
+    /// <summary>
+    /// Keys to create a new Token from the given Input.
+    /// </summary>
+    private string[] confirmKeys = new[] { ";", "Tab", "Enter" };
+
+    private void OnInputKeyDown(KeyboardEventArgs e)
+    {
+        if (confirmKeys.Contains(e.Key))
+        {
+            AddNewToken(CurrentValue, e.Key);
+        }
+        else if (e.Key == "Backspace" && string.IsNullOrEmpty(CurrentValue) && Tokens.Any())
+        {
+            RemoveToken(Tokens.Last());
+        }
+    }
+
+    private void AddNewToken(string token, string lastChar)
+    {
+        if (string.IsNullOrEmpty(CurrentValue))
+        {
+            return;
+        }
+
+        if (Tokens.Contains(token))
+        {
+            return;
+        }
+
+        Tokens.Add(CurrentValue.Replace(lastChar, string.Empty));
+
+        CurrentValue = string.Empty;
+
+        TokensChanged.InvokeAsync(Tokens);
+    }
+
+    private void RemoveToken(string token)
+    {
+        if (Tokens.Contains(token))
+        {
+            Tokens.Remove(token);
+
+            TokensChanged.InvokeAsync(Tokens);
+        }
+    }
+}

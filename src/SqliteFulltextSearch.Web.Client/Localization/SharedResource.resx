@@ -1,0 +1,240 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ApplicationError_Exception" xml:space="preserve">
+    <value>An unexpected error occured.</value>
+  </data>
+  <data name="ClientError_UnexpectedError" xml:space="preserve">
+    <value>An unexpected error occured</value>
+  </data>
+  <data name="GitRepository_Branch" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="GitRepository_CloneUrl" xml:space="preserve">
+    <value>Clone Url</value>
+  </data>
+  <data name="GitRepository_Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="GitRepository_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="GitRepository_Organization" xml:space="preserve">
+    <value>Organization</value>
+  </data>
+  <data name="GitRepository_Owner" xml:space="preserve">
+    <value>Owner</value>
+  </data>
+  <data name="GitRepository_Repository" xml:space="preserve">
+    <value>Repository</value>
+  </data>
+  <data name="GitRepository_Source" xml:space="preserve">
+    <value>Source System</value>
+  </data>
+  <data name="ManageSearchIndex_CreateSearchIndex" xml:space="preserve">
+    <value>Create Search Index</value>
+  </data>
+  <data name="ManageSearchIndex_DeleteAllDocuments" xml:space="preserve">
+    <value>Delete All Documents</value>
+  </data>
+  <data name="ManageSearchIndex_DeleteSearchIndex" xml:space="preserve">
+    <value>Delete Search Index</value>
+  </data>
+  <data name="ManageSearchIndex_RecreateSearchIndex" xml:space="preserve">
+    <value>Recreate Search Index</value>
+  </data>
+  <data name="ManageSearchIndex_RecreateSearchPipeline" xml:space="preserve">
+    <value>Recreate Search Pipeline</value>
+  </data>
+  <data name="Message_Error_Title" xml:space="preserve">
+    <value>Unexpected Error Occured</value>
+  </data>
+  <data name="Message_ShowHelp" xml:space="preserve">
+    <value>Show Help</value>
+  </data>
+  <data name="Metrics_IndexName" xml:space="preserve">
+    <value>Index Name</value>
+  </data>
+  <data name="Metrics_IndexSize" xml:space="preserve">
+    <value>Index Size (Mb)</value>
+  </data>
+  <data name="Metrics_NumberOfDocumentsCurrentlyBeingIndexed" xml:space="preserve">
+    <value>Number of DocumentsCurrentlyBeingIndexed</value>
+  </data>
+  <data name="Metrics_NumberOfFetchesCurrentlyInProgress" xml:space="preserve">
+    <value>Number of Fetches Currently In Progress</value>
+  </data>
+  <data name="Metrics_NumberOfQueriesCurrentlyInProgress" xml:space="preserve">
+    <value>Number of Queries Currently In Progress</value>
+  </data>
+  <data name="Metrics_TotalNumberOfDocumentsIndexed" xml:space="preserve">
+    <value>Total Number of Documents indexed</value>
+  </data>
+  <data name="Metrics_TotalNumberOfFetches" xml:space="preserve">
+    <value>Total Number of Fetches</value>
+  </data>
+  <data name="Metrics_TotalNumberOfQueries" xml:space="preserve">
+    <value>Total Number of Queries</value>
+  </data>
+  <data name="Metrics_TotalTimeSpentBulkIndexingDocuments" xml:space="preserve">
+    <value>Total Time Spent Bulk Indexing (Seconds)</value>
+  </data>
+  <data name="Metrics_TotalTimeSpentIndexingDocuments" xml:space="preserve">
+    <value>Total Time Spent Indexing Documents</value>
+  </data>
+  <data name="Metrics_TotalTimeSpentOnFetches" xml:space="preserve">
+    <value>Total Time Spent on Fetches (s)</value>
+  </data>
+  <data name="Metrics_TotalTimeSpentOnQueries" xml:space="preserve">
+    <value>Total Time Spent On Queries (s)</value>
+  </data>
+  <data name="SortOptionEnum_LatestCommitDateAscending" xml:space="preserve">
+    <value>Recently Updated (Asc)</value>
+  </data>
+  <data name="SortOptionEnum_LatestCommitDateDescending" xml:space="preserve">
+    <value>Recently Updated (Desc)</value>
+  </data>
+  <data name="SortOptionEnum_OwnerAscending" xml:space="preserve">
+    <value>Owner (Asc)</value>
+  </data>
+  <data name="SortOptionEnum_OwnerDescending" xml:space="preserve">
+    <value>Owner (Desc)</value>
+  </data>
+  <data name="SortOptionEnum_RepositoryAscending" xml:space="preserve">
+    <value>Repository (Asc)</value>
+  </data>
+  <data name="SortOptionEnum_RepositoryDescending" xml:space="preserve">
+    <value>Repository (Desc)</value>
+  </data>
+  <data name="SourceSystems_Codeberg" xml:space="preserve">
+    <value>Codeberg</value>
+  </data>
+  <data name="SourceSystems_Custom" xml:space="preserve">
+    <value>Custom</value>
+  </data>
+  <data name="SourceSystems_GitHub" xml:space="preserve">
+    <value>GitHub</value>
+  </data>
+  <data name="SourceSystems_GitLab" xml:space="preserve">
+    <value>GitLab</value>
+  </data>
+  <data name="Validation_IsRequired" xml:space="preserve">
+    <value>{0} is required</value>
+  </data>
+</root>

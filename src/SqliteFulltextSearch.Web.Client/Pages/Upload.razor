@@ -1,0 +1,77 @@
+﻿@page "/Upload"
+
+@using ElasticsearchFulltextExample.Web.Client.Components
+@using ElasticsearchFulltextExample.Web.Client.Extensions;
+@using ElasticsearchFulltextExample.Web.Client.Infrastructure;
+@using ElasticsearchFulltextExample.Shared.Client
+
+@inject SearchClient SearchClient
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>Index Git Repository</PageTitle>
+
+
+<EditForm @ref=Form Model="@CurrentUpload" OnValidSubmit="@(async () => await HandleValidSubmitAsync())" novalidate>
+    <SimpleValidator TModel=UploadModel ValidationFunc="ValidateCurrentUpload" />
+    <div class="upload-form">
+        <!-- Row 1 -->
+        <div class="upload-label">
+            <label class="document-title">Title:</label>
+        </div>
+        <div class="upload-input">
+            <FluentTextField AutoComplete="one-time-code" Style="width: 400px;" @bind-Value="CurrentUpload.Title" Required />
+        </div>
+        <div class="upload-validation">
+            <FluentValidationMessage Class="w-100" For="@(() => CurrentUpload.Title)" />
+        </div>
+        <!-- Row 2 -->
+        <div class="upload-label">
+            <label for="document-keywords">Keywords:</label>
+        </div>
+        <div class="upload-input">
+            <TokenInput Tokens="CurrentUpload.Keywords" TokensChanged="() => Form?.EditContext?.Validate()" />
+        </div>
+        <div class="upload-validation">
+            <FluentValidationMessage For="@(() => CurrentUpload.Keywords)" />
+        </div>
+        <!-- Row 3 -->
+        <div class="upload-label">
+            <label for="document-file">File:</label>
+        </div>
+        <div class="upload-input">
+            <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="4" VerticalAlignment="VerticalAlignment.Center">
+                <FluentInputFile @ref="@myFileUploader"
+                                 DragDropZoneVisible="false"
+                                 Mode="InputFileMode.Stream"
+                                 Multiple="true"
+                                 AnchorId="DocumentUploadButton"
+                                 MaximumFileSize="@(100 * 1024 * 1024)"
+                                 Accept="*.*"
+                                 OnCompleted="@OnCompletedAsync" />
+
+                <FluentButton Style="width: 400px;" Id="DocumentUploadButton" Appearance="Appearance.Accent">
+                    Select File ...
+                </FluentButton>
+
+                @if (string.IsNullOrWhiteSpace(CurrentUpload.Filename))
+                {
+                    <FluentLabel Typo="Typography.Body">No File Selected ...</FluentLabel>
+                }
+                else
+                {
+                    <FluentLabel>@CurrentUpload.Filename</FluentLabel>
+                }
+            </FluentStack>
+        </div>
+        <div class="upload-validation">
+            <FluentValidationMessage For="@(() => CurrentUpload.Filename)" />
+        </div>
+
+        <div class="upload-buttons">
+            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center">
+                <FluentButton Type="ButtonType.Button" Appearance="Appearance.Accent" OnClick="HandleValidSubmitAsync">Upload Document</FluentButton>
+                <FluentButton Appearance="Appearance.Accent" OnClick="@(async () => await HandleDiscardAsync())">Discard Changes</FluentButton>
+            </FluentStack>
+        </div>
+    </div>
+</EditForm>

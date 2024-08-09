@@ -1,0 +1,117 @@
+﻿@namespace ElasticsearchFulltextExample.Web.Client.Components
+
+@using ElasticsearchFulltextExample.Shared.Constants
+@using ElasticsearchFulltextExample.Shared.Models
+@using System.Text
+
+<div class="search-result">
+    <div class="document-file-icon">
+        <img src="@ImageUrl" class="icon-size" />
+    </div>
+    <div class="document-title">
+        <strong><a href="@Item.Url">@Item.Title</a></strong>
+    </div>
+    <div class="document-highlight">
+        @foreach (var htmlMatch in HtmlMatches)
+        {
+            <ul>
+                <li>@htmlMatch</li>
+            </ul>
+        }
+    </div>
+    <div class="document-filename"><span class="filename">Filename: @Item.Filename</span></div>
+    <div class="document-keywords">
+        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Start">
+            @foreach (var keyword in Item.Keywords)
+            {
+                <FluentBadge Style="margin-right: 5px;" Appearance="Appearance.Neutral" OnClick="@(e => OnKeywordClicked(keyword))">@keyword</FluentBadge>
+            }
+        </FluentStack>
+    </div>
+
+</div>
+
+
+@code {
+
+    /// <summary>
+    /// Search Result.
+    /// </summary>
+    [Parameter]
+    public required SearchResultDto Item { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback that is invoked when the text field value changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> KeywordClicked { get; set; }
+
+    /// <summary>
+    /// The Prepared Matches.
+    /// </summary>
+    public string? ImageUrl { get; set; }
+
+    /// <summary>
+    /// The Prepared Matches.
+    /// </summary>
+    public List<MarkupString> HtmlMatches { get; set; } = new();
+
+    /// <summary>
+    /// Fixed List of Icons for a File Extension. Maybe make this configurable.
+    /// </summary>
+    private static readonly IDictionary<string, string> extensionToImageUrl = new Dictionary<string, string>
+    {
+        {".jpg", "/img/extension-jpeg.png"},
+        {".jpeg", "/img/extension-jpeg.png"},
+        {".doc", "/img/extension-doc.png"},
+        {".docx", "/img/extension-doc.png"},
+        {".pdf", "/img/extension-pdf.png"},
+        {".txt", "/img/extension-txt.png"},
+        {".md", "/img/extension-txt.png"},
+        {".markdown", "/img/extension-txt.png"},
+        {".html", "/img/extension-html.png"},
+        {".htm", "/img/extension-htm.png"},
+    };
+
+    protected override void OnParametersSet()
+    {
+        HtmlMatches = GetHtmlMatches(Item);
+        ImageUrl = GetImageUrl(Item);
+    }
+
+    private async Task OnKeywordClicked(string keyword)
+    {
+        await KeywordClicked.InvokeAsync(keyword);
+    }
+
+    private static List<MarkupString> GetHtmlMatches(SearchResultDto searchResult)
+    {
+        List<MarkupString> htmlMatches = new();
+
+        foreach (var match in searchResult.Matches.Take(1))
+        {
+            var htmlString = new StringBuilder(match)
+                .Replace(ElasticConstants.Highlighter.HighlightStartTag, "<mark>")
+                .Replace(ElasticConstants.Highlighter.HighlightEndTag, "</mark>")
+                .ToString();
+
+            var markupString = new MarkupString(htmlString);
+
+            htmlMatches.Add(markupString);
+        }
+
+        return htmlMatches;
+    }
+
+    private static string GetImageUrl(SearchResultDto searchResult)
+    {
+        var extension = Path.GetExtension(searchResult.Filename);
+
+        if (!extensionToImageUrl.TryGetValue(extension, out var imageUrl))
+        {
+            return extensionToImageUrl[".txt"];
+        }
+
+        return imageUrl;
+    }
+}

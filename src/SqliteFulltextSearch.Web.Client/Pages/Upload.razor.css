@@ -1,0 +1,40 @@
+﻿.upload-form {
+    display: grid;
+    grid-template-columns: 100px 1fr 150px;
+    border: 1px solid black;
+}
+
+    .upload-form .upload-label {
+        grid-column: 1 / 2;
+        align-content: center;
+        padding: 10px;
+        border-right: 1px solid black;
+        border-bottom: 1px solid black;
+    }
+
+    .upload-form .upload-input {
+        grid-column: 2 / 3;
+        align-content: center;
+        padding: 10px;
+        border-bottom: 1px solid black;
+    }
+
+    .upload-form .upload-validation {
+        grid-column: 3 / 4;
+        align-content: center;
+        padding: 10px;
+        border-bottom: 1px solid black;
+    }
+
+    .upload-form .upload-buttons {
+        grid-column: 1 / 4;
+        padding: 10px;
+    }
+
+.w-100 {
+    width: 100%;
+}
+
+.form-input {
+    width: 200px;
+}

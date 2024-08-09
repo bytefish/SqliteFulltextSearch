@@ -1,0 +1,258 @@
+﻿@namespace ElasticsearchFulltextExample.Web.Client.Components
+@using Microsoft.FluentUI.AspNetCore.Components.Utilities
+@using System.Text
+
+@*
+This implementation is based upon the Component by @darthmaure at:
+
+    - https://github.com/darthmaure/blazor-autocomplete
+
+All Credit goes to @darthmaure.
+*@
+
+@inherits FluentComponentBase
+
+<div class="autocomplete-root">
+    <FluentTextField @attributes="@AdditionalAttributes"
+                     style="width: 100%;"
+                     Value="@Value"
+                     @oninput="HandleInputAsync"
+                     @onkeydown="OnKeyDown"
+                     @onfocusout="OnLostFocus"
+                     placeholder="@Placeholder"
+                     aria-autocomplete="list"
+                     aria-haspopup="true"
+                     autocomplete="off"
+                     role="combobox"
+                     aria-expanded="true">
+        <FluentIcon Value="@(new Icons.Regular.Size16.Search())" Slot="start" Color="Color.Neutral" />
+    </FluentTextField>
+    @if (InternalAutocompleteItems?.Any() == true)
+    {
+        <div class="autocomplete-panel">
+            <ul role="listbox" class="autocomplete-items">
+                @foreach (var item in InternalAutocompleteItems)
+                {
+                    var className = item.IsSelected ? "autocomplete-item-hover" : "";
+                    <li role="option" class="autocomplete-item @className"
+                        @onmousedown="(() => AutocompleteItemClick(item.Text))"
+                        @onmouseover="(() => AutocompleteMouseOver(item.Text))">@((MarkupString) @item.Html)</li>
+                }
+            </ul>
+        </div>
+    }
+</div>
+
+@code {
+
+    /// <summary>
+    /// Gets or sets the flag for setting this field as ReadOnly.
+    /// </summary>
+    [Parameter]
+    public bool ReadOnly { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets the flag for setting this field as Disabled.
+    /// </summary>
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets the Placeholder.
+    /// </summary>
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Minimum Text Length the Suggestions start to appear (default: 3).
+    /// </summary>
+    [Parameter]
+    public int MinTextLength { get; set; } = 3;
+
+    /// <summary>
+    /// Gets or sets the maximum number of items to appear (default: 5).
+    /// </summary>
+    [Parameter]
+    public int MaxAutocompleteItems { get; set; } = 5;
+
+    /// <summary>
+    /// Gets or sets the text field value.
+    /// </summary>
+    [Parameter]
+    public string Value { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the callback that is invoked when the text field value changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback that is invoked when the text field value is confirmed.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnSearch { get; set; }
+
+    /// <summary>
+    /// Filter the list of options (items), using the text encoded by the user.
+    /// </summary>
+    [Parameter]
+    public EventCallback<AutocompleteSearchEventArgs> OnOptionsSearch { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Autocomplete Items bound to the DropDown.
+    /// </summary>
+    private List<AutocompleteItem> InternalAutocompleteItems { get; set; } = [];
+
+    /// <summary />
+    protected async Task HandleInputAsync(ChangeEventArgs e)
+    {
+        if (ReadOnly || Disabled)
+        {
+            return;
+        }
+
+        Value = e.Value?.ToString() ?? string.Empty;
+
+        await RaiseValueTextChangedAsync(Value);
+
+        if (Value.Length < MinTextLength)
+        {
+            InternalAutocompleteItems = [];
+
+            return;
+        }
+
+        if (Value.Length >= MinTextLength)
+        {
+            var args = new AutocompleteSearchEventArgs
+                {
+                    Text = Value,
+                    Items = [],
+                };
+
+            // Invoke the supplied Callback to filter Options
+            await OnOptionsSearch.InvokeAsync(args);
+
+            // Set the internal list of Autocompletes
+            InternalAutocompleteItems = args.Items
+                .Select(item => new AutocompleteItem
+                {
+                    Text = item,
+                    Html = GetHtmlSuggestion(Value, item)
+                })
+                .ToList();
+        }
+    }
+
+    private static string GetHtmlSuggestion(string prefix, string suggest)
+    {
+        var suggestionWithoutPrefix = suggest.Replace(prefix, string.Empty);
+
+        return $"{prefix}<strong>{suggestionWithoutPrefix}</strong>";
+    }
+
+    /// <summary />
+    private async Task RaiseValueTextChangedAsync(string value)
+    {
+        if (ValueChanged.HasDelegate)
+        {
+            await ValueChanged.InvokeAsync(Value);
+        }
+    }
+
+    private async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "ArrowDown")
+        {
+            SelectNextItem();
+        }
+        else if (e.Key == "ArrowUp")
+        {
+            SelectPreviousItem();
+        }
+        else if (e.Key == "Enter")
+        {
+            // If any Autocomplete is selected set the text first
+            if (InternalAutocompleteItems.Any(d => d.IsSelected))
+            {
+                Value = InternalAutocompleteItems.First(d => d.IsSelected).Text;
+            }
+
+            if (OnSearch.HasDelegate)
+            {
+                await OnSearch.InvokeAsync(Value);
+            }
+
+            InternalAutocompleteItems = [];
+        }
+        else if (e.Key == "Escape")
+        {
+            InternalAutocompleteItems = [];
+        }
+    }
+
+    private void OnLostFocus()
+    {
+        InternalAutocompleteItems = [];
+    }
+
+    private async Task AutocompleteItemClick(string item)
+    {
+        Value = item;
+
+        if (OnSearch.HasDelegate)
+        {
+            await OnSearch.InvokeAsync(Value);
+        }
+
+        InternalAutocompleteItems = [];
+    }
+
+    private void AutocompleteMouseOver(string item)
+    {
+        InternalAutocompleteItems?.ForEach(d => d.IsSelected = false);
+    }
+
+    private void SelectNextItem()
+    {
+        if (InternalAutocompleteItems?.Any() == true)
+        {
+            var prevItem = InternalAutocompleteItems.FirstOrDefault(d => d.IsSelected);
+            if (prevItem is null)
+            {
+                InternalAutocompleteItems.First().IsSelected = true;
+            }
+            else
+            {
+                var index = InternalAutocompleteItems.IndexOf(prevItem);
+                if (index < InternalAutocompleteItems.Count - 1)
+                {
+                    prevItem.IsSelected = false;
+                    InternalAutocompleteItems.ElementAt(index + 1).IsSelected = true;
+                }
+            }
+        }
+    }
+
+    private void SelectPreviousItem()
+    {
+        if (InternalAutocompleteItems?.Any() == true)
+        {
+            var currentItem = InternalAutocompleteItems.FirstOrDefault(d => d.IsSelected);
+            if (currentItem is null)
+            {
+                InternalAutocompleteItems.Last().IsSelected = true;
+            }
+            else
+            {
+                var index = InternalAutocompleteItems.IndexOf(currentItem);
+                if (index > 0)
+                {
+                    currentItem.IsSelected = false;
+                    InternalAutocompleteItems.ElementAt(index - 1).IsSelected = true;
+                }
+            }
+        }
+    }
+}

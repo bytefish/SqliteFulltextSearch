@@ -1,0 +1,34 @@
+﻿@page "/Search"
+
+@using ElasticsearchFulltextExample.Shared.Client
+@using ElasticsearchFulltextExample.Web.Client.Components
+@using ElasticsearchFulltextExample.Web.Client.Extensions;
+@using ElasticsearchFulltextExample.Web.Client.Infrastructure;
+
+@inject SearchClient SearchClient 
+
+<PageTitle>Search indexed documents</PageTitle>
+
+<div class="search-container">
+    <div class="search-header">
+        <div class="search-box">
+            <Autocomplete @bind-Value="Query" OnOptionsSearch="OnOptionsSearch" OnSearch="HandleSearchAsync"></Autocomplete>
+            <FluentButton @onclick=@QueryAsync>Search</FluentButton>
+        </div>
+    </div>
+    <div class="search-results-total">
+        <span>@_totalItemCount Results (@_tookInSeconds seconds)</span>
+    </div>
+    <div class="search-results">
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
+            @foreach (var searchResult in _searchResults)
+            {
+                <SearchResult Item="@searchResult" KeywordClicked="HandleKeywordClickedAsync"></SearchResult>
+            }
+        </FluentStack>
+        
+    </div>
+    <div class="search-paginator">
+        <Paginator State="@_pagination"></Paginator>
+    </div>
+</div>
