@@ -2,7 +2,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace ElasticsearchFulltextExample.Api.Models
+namespace SqliteFulltextSearch.Api.Models
 {
     /// <summary>
     /// Summarizes useful metrics about the Elasticsearch instance.

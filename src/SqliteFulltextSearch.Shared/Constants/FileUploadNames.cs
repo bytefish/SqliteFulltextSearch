@@ -1,6 +1,6 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace ElasticsearchFulltextExample.Shared.Constants
+namespace SqliteFulltextSearch.Shared.Constants
 {
     /// <summary>
     /// Field Names used in File Uploads.

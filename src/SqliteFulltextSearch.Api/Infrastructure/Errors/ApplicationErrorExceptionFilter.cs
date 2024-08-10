@@ -1,5 +1,5 @@
 ﻿
-namespace ElasticsearchFulltextExample.Api.Infrastructure.Errors
+namespace SqliteFulltextSearch.Api.Infrastructure.Errors
 {
     public class ApplicationErrorExceptionFilter : IEndpointFilter
     {
@@ -20,9 +20,8 @@ namespace ElasticsearchFulltextExample.Api.Infrastructure.Errors
             } 
             catch(Exception e)
             {
-                _exceptionToErrorMapper.CreateApplicationErrorResult(context.HttpContext, e);
+                return _exceptionToErrorMapper.CreateApplicationErrorResult(context.HttpContext, e);
             }
-
         }
     }
 }

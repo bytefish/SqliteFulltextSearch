@@ -1,6 +1,6 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace ElasticsearchFulltextExample.Api.Infrastructure.Mvc
+namespace SqliteFulltextSearch.Api.Infrastructure.Mvc
 {
     public class EnumRouteConstraint<TEnum> : IRouteConstraint
         where TEnum : struct

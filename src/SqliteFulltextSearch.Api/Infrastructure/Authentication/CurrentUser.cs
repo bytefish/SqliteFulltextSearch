@@ -3,7 +3,7 @@
 using SqliteFulltextSearch.Database.Model;
 using System.Security.Claims;
 
-namespace ElasticsearchFulltextExample.Api.Infrastructure.Authentication
+namespace SqliteFulltextSearch.Api.Infrastructure.Authentication
 {
     /// <summary>
     /// A Scoped Service to provide the current user information.

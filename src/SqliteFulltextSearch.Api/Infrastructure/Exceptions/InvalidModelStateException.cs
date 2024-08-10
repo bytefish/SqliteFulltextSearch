@@ -1,9 +1,9 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using ElasticsearchFulltextExample.Api.Infrastructure.Errors;
+using SqliteFulltextSearch.Api.Infrastructure.Errors;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace ElasticsearchFulltextExample.Api.Infrastructure.Exceptions
+namespace SqliteFulltextSearch.Api.Infrastructure.Exceptions
 {
     public class InvalidModelStateException : ApplicationErrorException
     {

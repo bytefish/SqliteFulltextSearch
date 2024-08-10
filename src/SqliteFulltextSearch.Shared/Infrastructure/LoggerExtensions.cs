@@ -3,7 +3,7 @@
 using Microsoft.Extensions.Logging;
 using System.Runtime.CompilerServices;
 
-namespace ElasticsearchFulltextExample.Shared.Infrastructure
+namespace SqliteFulltextSearch.Shared.Infrastructure
 {
     public static class LoggerExtensions
     {

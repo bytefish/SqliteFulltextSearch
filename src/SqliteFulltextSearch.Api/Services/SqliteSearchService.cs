@@ -3,10 +3,10 @@
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Core.Search;
 using Elastic.Clients.Elasticsearch.IndexManagement;
-using ElasticsearchFulltextExample.Api.Configuration;
-using ElasticsearchFulltextExample.Api.Infrastructure.Exceptions;
-using ElasticsearchFulltextExample.Api.Models;
-using ElasticsearchFulltextExample.Shared.Infrastructure;
+using SqliteFulltextSearch.Api.Configuration;
+using SqliteFulltextSearch.Api.Infrastructure.Exceptions;
+using SqliteFulltextSearch.Api.Models;
+using SqliteFulltextSearch.Shared.Infrastructure;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -21,7 +21,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ElasticsearchFulltextExample.Api.Services
+namespace SqliteFulltextSearch.Api.Services
 {
     public class SqliteSearchService
     {

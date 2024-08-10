@@ -1,6 +1,6 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace ElasticsearchFulltextExample.Api.Models
+namespace SqliteFulltextSearch.Api.Models
 {
     /// <summary>
     /// Holds the line number and line content for a match, and it 

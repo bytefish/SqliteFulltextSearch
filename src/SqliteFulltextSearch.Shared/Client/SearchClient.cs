@@ -1,13 +1,13 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using ElasticsearchFulltextExample.Shared.Constants;
-using ElasticsearchFulltextExample.Shared.Infrastructure;
-using ElasticsearchFulltextExample.Shared.Models;
+using SqliteFulltextSearch.Shared.Constants;
+using SqliteFulltextSearch.Shared.Infrastructure;
+using SqliteFulltextSearch.Shared.Models;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
 using System.Net.Http.Json;
 
-namespace ElasticsearchFulltextExample.Shared.Client
+namespace SqliteFulltextSearch.Shared.Client
 {
     public class SearchClient
     {
@@ -18,51 +18,6 @@ namespace ElasticsearchFulltextExample.Shared.Client
         {
             _httpClient = httpClient;
             _logger = logger;
-        }
-
-        public async Task DeleteSearchIndexAsync(CancellationToken cancellationToken)
-        {
-            _logger.TraceMethodEntry();
-
-            var response = await _httpClient
-                .PostAsync("delete-index", null, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new ApiException(string.Format(CultureInfo.InvariantCulture,
-                    "HTTP Request failed with Status: '{0}' ({1})",
-                    (int)response.StatusCode,
-                    response.StatusCode))
-                {
-                    StatusCode = response.StatusCode
-                };
-            }
-        }
-        public async Task DeleteSearchPipelineAsync(CancellationToken cancellationToken)
-        {
-            await DeletePipelineAsync(ElasticConstants.Pipelines.Attachments, cancellationToken).ConfigureAwait(false);
-        }
-
-
-        public async Task DeletePipelineAsync(string pipeline, CancellationToken cancellationToken)
-        {
-            _logger.TraceMethodEntry();
-
-            var response = await _httpClient
-                .PostAsync($"delete-pipeline/{pipeline}", null, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new ApiException(string.Format(CultureInfo.InvariantCulture,
-                    "HTTP Request failed with Status: '{0}' ({1})",
-                    (int)response.StatusCode,
-                    response.StatusCode))
-                {
-                    StatusCode = response.StatusCode
-                };
-            }
         }
 
         public async Task DeleteAllDocumentsAsync(CancellationToken cancellationToken)
@@ -168,46 +123,6 @@ namespace ElasticsearchFulltextExample.Shared.Client
 
             var response = await _httpClient
                 .PostAsync($"upload", multipartFormData, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new ApiException(string.Format(CultureInfo.InvariantCulture,
-                    "HTTP Request failed with Status: '{0}' ({1})",
-                    (int)response.StatusCode,
-                    response.StatusCode))
-                {
-                    StatusCode = response.StatusCode
-                };
-            }
-        }
-
-        public async Task CreateSearchIndexAsync(CancellationToken cancellationToken)
-        {
-            _logger.TraceMethodEntry();
-
-            var response = await _httpClient
-                .PostAsync("create-index", null, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new ApiException(string.Format(CultureInfo.InvariantCulture,
-                    "HTTP Request failed with Status: '{0}' ({1})",
-                    (int)response.StatusCode,
-                    response.StatusCode))
-                {
-                    StatusCode = response.StatusCode
-                };
-            }
-        }
-
-        public async Task CreateSearchPipelineAsync(CancellationToken cancellationToken)
-        {
-            _logger.TraceMethodEntry();
-
-            var response = await _httpClient
-                .PostAsync("create-pipeline", null, cancellationToken)
                 .ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)

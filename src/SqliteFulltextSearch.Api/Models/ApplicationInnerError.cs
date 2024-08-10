@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ElasticsearchFulltextExample.Api.Models
+namespace SqliteFulltextSearch.Api.Models
 {
     /// <summary>
     /// Class representing implementation specific debugging information to help determine the cause of the error.

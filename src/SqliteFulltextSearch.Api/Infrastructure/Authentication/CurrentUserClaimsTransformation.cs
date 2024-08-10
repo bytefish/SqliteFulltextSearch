@@ -1,10 +1,10 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using ElasticsearchFulltextExample.Api.Services;
+using SqliteFulltextSearch.Api.Services;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 
-namespace ElasticsearchFulltextExample.Api.Infrastructure.Authentication
+namespace SqliteFulltextSearch.Api.Infrastructure.Authentication
 {
     public class CurrentUserClaimsTransformation : IClaimsTransformation
     {

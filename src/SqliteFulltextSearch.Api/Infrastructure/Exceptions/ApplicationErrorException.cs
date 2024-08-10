@@ -2,7 +2,7 @@
 
 using System;
 
-namespace ElasticsearchFulltextExample.Api.Infrastructure.Exceptions
+namespace SqliteFulltextSearch.Api.Infrastructure.Exceptions
 {
     /// <summary>
     /// Base Exception for the Application.

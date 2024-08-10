@@ -1,14 +1,14 @@
 ﻿//// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-//using ElasticsearchFulltextExample.Api.Services;
-//using ElasticsearchFulltextExample.Api.Models;
-//using ElasticsearchFulltextExample.Shared.Models;
+//using SqliteFulltextSearch.Api.Services;
+//using SqliteFulltextSearch.Api.Models;
+//using SqliteFulltextSearch.Shared.Models;
 //using Microsoft.AspNetCore.Mvc;
 //using System.Net;
-//using ElasticsearchFulltextExample.Api.Infrastructure.Errors;
+//using SqliteFulltextSearch.Api.Infrastructure.Errors;
 //using Elastic.Clients.Elasticsearch;
 
-//namespace ElasticsearchFulltextExample.Api
+//namespace SqliteFulltextSearch.Api
 //{
 //    public static class SearchApi
 //    {

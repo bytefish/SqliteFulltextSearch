@@ -8,12 +8,12 @@ using System.Security.Claims;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
-using ElasticsearchFulltextExample.Api.Constants;
-using ElasticsearchFulltextExample.Api.Infrastructure.Errors;
-using ElasticsearchFulltextExample.Api.Infrastructure.Errors.Translators;
-using ElasticsearchFulltextExample.Api.Infrastructure.Authentication;
-using ElasticsearchFulltextExample.Api.Configuration;
-using ElasticsearchFulltextExample.Api.Services;
+using SqliteFulltextSearch.Api.Constants;
+using SqliteFulltextSearch.Api.Infrastructure.Errors;
+using SqliteFulltextSearch.Api.Infrastructure.Errors.Translators;
+using SqliteFulltextSearch.Api.Infrastructure.Authentication;
+using SqliteFulltextSearch.Api.Configuration;
+using SqliteFulltextSearch.Api.Services;
 using SqliteFulltextSearch.Database;
 
 public partial class Program {

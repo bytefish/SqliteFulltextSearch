@@ -1,12 +1,12 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using ElasticsearchFulltextExample.Api.Infrastructure.Errors;
-using ElasticsearchFulltextExample.Api.Models;
-using ElasticsearchFulltextExample.Shared.Infrastructure;
+using SqliteFulltextSearch.Api.Infrastructure.Errors;
+using SqliteFulltextSearch.Api.Models;
+using SqliteFulltextSearch.Shared.Infrastructure;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ElasticsearchFulltextExample.Api.Controllers
+namespace SqliteFulltextSearch.Api.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
     public class ErrorController : ControllerBase

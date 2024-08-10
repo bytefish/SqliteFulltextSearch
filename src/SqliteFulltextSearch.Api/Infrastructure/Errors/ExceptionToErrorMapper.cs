@@ -1,11 +1,12 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using ElasticsearchFulltextExample.Api.Infrastructure.Exceptions;
-using ElasticsearchFulltextExample.Api.Models;
-using ElasticsearchFulltextExample.Shared.Infrastructure;
+using SqliteFulltextSearch.Api.Infrastructure.Exceptions;
+using SqliteFulltextSearch.Api.Models;
+using SqliteFulltextSearch.Shared.Infrastructure;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace ElasticsearchFulltextExample.Api.Infrastructure.Errors
+namespace SqliteFulltextSearch.Api.Infrastructure.Errors
 {
     /// <summary>
     /// Handles errors returned by the application.
@@ -24,7 +25,7 @@ namespace ElasticsearchFulltextExample.Api.Infrastructure.Errors
             _translators = translators.ToDictionary(x => x.ExceptionType, x => x);
         }
 
-        public ApplicationErrorResult CreateApplicationErrorResult(HttpContext httpContext, Exception exception)
+        public JsonHttpResult<ApplicationError> CreateApplicationErrorResult(HttpContext httpContext, Exception exception)
         {
             _logger.TraceMethodEntry();
 
@@ -41,14 +42,19 @@ namespace ElasticsearchFulltextExample.Api.Infrastructure.Errors
             return error;
         }
 
-        private void AddMetadata(HttpContext httpContext, ApplicationErrorResult result)
+        private void AddMetadata(HttpContext httpContext, JsonHttpResult<ApplicationError> result)
         {
-            if (result.Error.InnerError == null)
+            if(result.Value == null)
             {
-                result.Error.InnerError = new ApplicationInnerError();
+                return;
             }
 
-            result.Error.InnerError.AdditionalProperties["trace-id"] = httpContext.TraceIdentifier;
+            if (result.Value.InnerError == null)
+            {
+                result.Value.InnerError = new ApplicationInnerError();
+            }
+
+            result.Value.InnerError.AdditionalProperties["trace-id"] = httpContext.TraceIdentifier;
         }
 
         private IExceptionTranslator GetTranslator(Exception e)

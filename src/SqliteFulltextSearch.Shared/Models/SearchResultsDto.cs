@@ -3,7 +3,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace ElasticsearchFulltextExample.Shared.Models
+namespace SqliteFulltextSearch.Shared.Models
 {
     public class SearchResultsDto
     {

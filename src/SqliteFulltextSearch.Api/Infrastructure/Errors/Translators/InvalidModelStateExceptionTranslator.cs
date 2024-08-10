@@ -1,11 +1,12 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using ElasticsearchFulltextExample.Api.Infrastructure.Exceptions;
-using ElasticsearchFulltextExample.Api.Models;
-using ElasticsearchFulltextExample.Shared.Infrastructure;
+using SqliteFulltextSearch.Api.Infrastructure.Exceptions;
+using SqliteFulltextSearch.Api.Models;
+using SqliteFulltextSearch.Shared.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace ElasticsearchFulltextExample.Api.Infrastructure.Errors.Translators
+namespace SqliteFulltextSearch.Api.Infrastructure.Errors.Translators
 {
     public class InvalidModelStateExceptionTranslator : IExceptionTranslator
     {
@@ -17,7 +18,7 @@ namespace ElasticsearchFulltextExample.Api.Infrastructure.Errors.Translators
         }
 
         /// <inheritdoc/>
-        public ApplicationErrorResult GetApplicationErrorResult(Exception exception, bool includeExceptionDetails)
+        public JsonHttpResult<ApplicationError> GetApplicationErrorResult(Exception exception, bool includeExceptionDetails)
         {
             var invalidModelStateException = (InvalidModelStateException)exception;
 
@@ -27,7 +28,7 @@ namespace ElasticsearchFulltextExample.Api.Infrastructure.Errors.Translators
         /// <inheritdoc/>
         public Type ExceptionType => typeof(InvalidModelStateException);
 
-        private ApplicationErrorResult InternalGetODataErrorResult(InvalidModelStateException exception, bool includeExceptionDetails)
+        private JsonHttpResult<ApplicationError> InternalGetODataErrorResult(InvalidModelStateException exception, bool includeExceptionDetails)
         {
             _logger.TraceMethodEntry();
 
@@ -70,11 +71,7 @@ namespace ElasticsearchFulltextExample.Api.Infrastructure.Errors.Translators
                 };
             }
 
-            return new ApplicationErrorResult
-            {
-                StatusCode = StatusCodes.Status400BadRequest,
-                Error = error
-            };
+            return TypedResults.Json(error, statusCode: StatusCodes.Status400BadRequest);
         }
 
         private Exception? GetFirstException(ModelStateDictionary modelStateDictionary)

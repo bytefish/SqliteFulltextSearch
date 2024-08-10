@@ -1,11 +1,11 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using ElasticsearchFulltextExample.Api.Infrastructure.Exceptions;
-using ElasticsearchFulltextExample.Api.Models;
-using ElasticsearchFulltextExample.Shared.Infrastructure;
+using SqliteFulltextSearch.Api.Infrastructure.Exceptions;
+using SqliteFulltextSearch.Api.Models;
+using SqliteFulltextSearch.Shared.Infrastructure;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace ElasticsearchFulltextExample.Api.Infrastructure.Errors.Translators
+namespace SqliteFulltextSearch.Api.Infrastructure.Errors.Translators
 {
     public class ApplicationErrorExceptionTranslator : IExceptionTranslator
     {
@@ -17,7 +17,7 @@ namespace ElasticsearchFulltextExample.Api.Infrastructure.Errors.Translators
         }
 
         /// <inheritdoc/>
-        public IResult GetApplicationErrorResult(Exception exception, bool includeExceptionDetails)
+        public JsonHttpResult<ApplicationError> GetApplicationErrorResult(Exception exception, bool includeExceptionDetails)
         {
             _logger.TraceMethodEntry();
 
@@ -26,7 +26,7 @@ namespace ElasticsearchFulltextExample.Api.Infrastructure.Errors.Translators
             return InternalGetApplicationErrorResult(applicationErrorException, includeExceptionDetails);
         }
 
-        private IResult InternalGetApplicationErrorResult(ApplicationErrorException exception, bool includeExceptionDetails)
+        private JsonHttpResult<ApplicationError> InternalGetApplicationErrorResult(ApplicationErrorException exception, bool includeExceptionDetails)
         {
             var error = new ApplicationError
             {

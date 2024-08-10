@@ -1,16 +1,14 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using ElasticsearchFulltextExample.Api.Configuration;
-using ElasticsearchFulltextExample.Api.Infrastructure.Exceptions;
-using ElasticsearchFulltextExample.Api.Infrastructure.Outbox;
-using ElasticsearchFulltextExample.Api.Infrastructure.Outbox.Messages;
+using SqliteFulltextSearch.Api.Configuration;
+using SqliteFulltextSearch.Api.Infrastructure.Exceptions;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using SqliteFulltextSearch.Database;
 using SqliteFulltextSearch.Database.Model;
 
-namespace ElasticsearchFulltextExample.Api.Services
+namespace SqliteFulltextSearch.Api.Services
 {
     public class DocumentService
     {

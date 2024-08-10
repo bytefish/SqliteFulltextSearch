@@ -115,7 +115,7 @@ namespace SqliteFulltextSearch.Database
 
             modelBuilder.Entity<Document>(entity =>
             {
-                entity.ToTable("document", "fts");
+                entity.ToTable("document");
 
                 entity.HasKey(e => e.Id);
 
@@ -176,13 +176,12 @@ namespace SqliteFulltextSearch.Database
 
             modelBuilder.Entity<Keyword>(entity =>
             {
-                entity.ToTable("keyword", "fts");
+                entity.ToTable("keyword");
 
                 entity.HasKey(e => e.Id);
 
                 entity.Property(e => e.Id)
                     .HasColumnType("INT")
-                    .UseHiLo("keyword_seq", "fts")
                     .HasColumnName("keyword_id")
                     .ValueGeneratedOnAdd();
 
@@ -223,13 +222,12 @@ namespace SqliteFulltextSearch.Database
 
             modelBuilder.Entity<Suggestion>(entity =>
             {
-                entity.ToTable("suggestion", "fts");
+                entity.ToTable("suggestion");
 
                 entity.HasKey(e => e.Id);
 
                 entity.Property(e => e.Id)
                     .HasColumnType("INT")
-                    .UseHiLo("suggestion_seq", "fts")
                     .HasColumnName("suggestion_id")
                     .ValueGeneratedOnAdd();
 
@@ -270,7 +268,7 @@ namespace SqliteFulltextSearch.Database
 
             modelBuilder.Entity<DocumentKeyword>(entity =>
             {
-                entity.ToTable("document_keyword", "fts");
+                entity.ToTable("document_keyword");
 
                 entity.HasKey(e => e.Id);
 
@@ -326,14 +324,13 @@ namespace SqliteFulltextSearch.Database
 
             modelBuilder.Entity<DocumentSuggestion>(entity =>
             {
-                entity.ToTable("document_suggestion", "fts");
+                entity.ToTable("document_suggestion");
 
                 entity.HasKey(e => e.Id);
 
                 entity.Property(e => e.Id)
                     .HasColumnType("integer")
                     .HasColumnName("document_suggestion_id")
-                    .UseHiLo("document_suggestion_seq", "fts")
                     .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.DocumentId)

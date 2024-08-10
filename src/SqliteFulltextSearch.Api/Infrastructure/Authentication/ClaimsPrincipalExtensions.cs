@@ -2,7 +2,7 @@
 
 using System.Security.Claims;
 
-namespace ElasticsearchFulltextExample.Api.Infrastructure.Authentication
+namespace SqliteFulltextSearch.Api.Infrastructure.Authentication
 {
     public static class ClaimsPrincipalExtensions
     {

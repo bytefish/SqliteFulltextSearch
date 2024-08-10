@@ -1,15 +1,15 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using ElasticsearchFulltextExample.Api.Constants;
-using ElasticsearchFulltextExample.Api.Infrastructure.Authentication;
-using ElasticsearchFulltextExample.Api.Infrastructure.Exceptions;
-using ElasticsearchFulltextExample.Shared.Infrastructure;
+using SqliteFulltextSearch.Api.Constants;
+using SqliteFulltextSearch.Api.Infrastructure.Authentication;
+using SqliteFulltextSearch.Api.Infrastructure.Exceptions;
+using SqliteFulltextSearch.Shared.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using SqliteFulltextSearch.Database;
 using SqliteFulltextSearch.Database.Model;
 using System.Security.Claims;
 
-namespace ElasticsearchFulltextExample.Api.Services
+namespace SqliteFulltextSearch.Api.Services
 {
     public class UserService
     {

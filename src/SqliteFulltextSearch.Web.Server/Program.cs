@@ -1,6 +1,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using ElasticsearchFulltextExample.Web.Server;
+using SqliteFulltextSearch.Web.Server;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +27,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(ElasticsearchFulltextExample.Web.Client._Imports).Assembly);
+    .AddAdditionalAssemblies(typeof(SqliteFulltextSearch.Web.Client._Imports).Assembly);
 
 app.UseRouting();
 app.UseAntiforgery();

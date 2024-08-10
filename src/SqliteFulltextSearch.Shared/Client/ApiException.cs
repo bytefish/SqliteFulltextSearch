@@ -3,7 +3,7 @@
 using System.Net;
 using System.Runtime.Serialization;
 
-namespace ElasticsearchFulltextExample.Shared.Client
+namespace SqliteFulltextSearch.Shared.Client
 {
     public class ApiException : Exception
     {

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ElasticsearchFulltextExample.Api.Models
+namespace SqliteFulltextSearch.Api.Models
 {
     /// <summary>
     /// Represents an error payload.
