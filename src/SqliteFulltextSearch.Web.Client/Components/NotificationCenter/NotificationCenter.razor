@@ -2,7 +2,7 @@
 @inject IDialogService DialogService
 @inject IMessageService MessageService
 
-@namespace ElasticsearchFulltextExample.Web.Client.Components
+@namespace SqliteFulltextSearch.Web.Client.Components
 
 <FluentButton BackgroundColor="var(--neutral-layer-4)" OnClick="OpenNotificationCenterAsync" Title="Notification center">
 @if (MessageService.Count(Routes.MESSAGES_NOTIFICATION_CENTER) > 0)

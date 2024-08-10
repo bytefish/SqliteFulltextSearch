@@ -1,14 +1,14 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using ElasticsearchFulltextExample.Web.Client.Infrastructure;
+using SqliteFulltextSearch.Web.Client.Infrastructure;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components;
-using ElasticsearchFulltextExample.Web.Client.Components;
-using ElasticsearchFulltextExample.Web.Client.Models;
-using ElasticsearchFulltextExample.Shared.Client;
-using ElasticsearchFulltextExample.Shared.Models;
+using SqliteFulltextSearch.Web.Client.Components;
+using SqliteFulltextSearch.Web.Client.Models;
+using SqliteFulltextSearch.Shared.Client;
+using SqliteFulltextSearch.Shared.Models;
 
-namespace ElasticsearchFulltextExample.Web.Client.Pages
+namespace SqliteFulltextSearch.Web.Client.Pages
 {
     public partial class Search : IAsyncDisposable
     {

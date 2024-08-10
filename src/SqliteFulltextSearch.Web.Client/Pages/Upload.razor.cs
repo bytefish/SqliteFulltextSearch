@@ -1,13 +1,13 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using ElasticsearchFulltextExample.Web.Client.Infrastructure;
-using ElasticsearchFulltextExample.Shared.Constants;
+using SqliteFulltextSearch.Web.Client.Infrastructure;
+using SqliteFulltextSearch.Shared.Constants;
 using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Forms;
 
-namespace ElasticsearchFulltextExample.Web.Client.Pages
+namespace SqliteFulltextSearch.Web.Client.Pages
 {
     /// <summary>
     /// Code-Behind for the Upload.

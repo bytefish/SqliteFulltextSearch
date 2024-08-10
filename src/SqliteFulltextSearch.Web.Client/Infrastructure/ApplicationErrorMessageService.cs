@@ -3,9 +3,9 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
-using ElasticsearchFulltextExample.Web.Client.Localization;
+using SqliteFulltextSearch.Web.Client.Localization;
 
-namespace ElasticsearchFulltextExample.Web.Client.Infrastructure
+namespace SqliteFulltextSearch.Web.Client.Infrastructure
 {
     public class ApplicationErrorMessageService
     {

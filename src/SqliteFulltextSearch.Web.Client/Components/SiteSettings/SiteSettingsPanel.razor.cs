@@ -2,7 +2,7 @@
 
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace ElasticsearchFulltextExample.Web.Client.Components
+namespace SqliteFulltextSearch.Web.Client.Components
 {
     public partial class SiteSettingsPanel
     {

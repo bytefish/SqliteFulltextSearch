@@ -1,20 +1,14 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ElasticsearchFulltextExample.Shared.Models
+namespace SqliteFulltextSearch.Shared.Models
 {
-    public class SearchSuggestionDto
+    public class KeywordDto
     {
-        [JsonPropertyName("suggestion_id")]
-        public required int Id{ get; set; }
+        [JsonPropertyName("keyword_id")]
+        public int Id { get; set; }
 
         [JsonPropertyName("name")]
         public required string Name { get; set; }
-
-        [JsonPropertyName("highlight")]
-        public required string Highlight { get; set; }
-
-        [JsonPropertyName("last_edited_by")]
-        public int LastEditedBy { get; set; }
 
         [JsonPropertyName("row_version")]
         public int RowVersion { get; set; }
@@ -24,6 +18,5 @@ namespace ElasticsearchFulltextExample.Shared.Models
 
         [JsonPropertyName("valid_to")]
         public DateTime ValidTo { get; set; }
-
     }
 }

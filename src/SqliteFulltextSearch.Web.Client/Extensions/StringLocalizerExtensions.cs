@@ -2,7 +2,7 @@
 
 using Microsoft.Extensions.Localization;
 
-namespace ElasticsearchFulltextExample.Web.Client.Extensions
+namespace SqliteFulltextSearch.Web.Client.Extensions
 {
     public static class StringLocalizerExtensions
     {

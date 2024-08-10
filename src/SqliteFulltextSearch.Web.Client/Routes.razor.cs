@@ -1,4 +1,4 @@
-﻿namespace ElasticsearchFulltextExample.Web.Client
+﻿namespace SqliteFulltextSearch.Web.Client
 {
     public partial class Routes
     {

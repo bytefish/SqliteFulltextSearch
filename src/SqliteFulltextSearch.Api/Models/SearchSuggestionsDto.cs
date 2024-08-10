@@ -6,8 +6,8 @@ namespace ElasticsearchFulltextExample.Api.Models
     {
         public required string Query { get; set; }
 
+        public long TookInMilliseconds { get; set; } = 0;
 
-        [JsonPropertyName("results")]
         public List<SearchSuggestion> Results { get; set; } = new();
     }
 }

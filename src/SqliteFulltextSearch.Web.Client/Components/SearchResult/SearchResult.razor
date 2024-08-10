@@ -1,8 +1,9 @@
-﻿@namespace ElasticsearchFulltextExample.Web.Client.Components
+﻿@namespace SqliteFulltextSearch.Web.Client.Components
 
-@using ElasticsearchFulltextExample.Shared.Constants
-@using ElasticsearchFulltextExample.Shared.Models
+@using SqliteFulltextSearch.Shared.Constants
+@using SqliteFulltextSearch.Shared.Models
 @using System.Text
+@using SqliteFulltextSearch.Shared.Constants
 
 <div class="search-result">
     <div class="document-file-icon">
@@ -91,8 +92,8 @@
         foreach (var match in searchResult.Matches.Take(1))
         {
             var htmlString = new StringBuilder(match)
-                .Replace(ElasticConstants.Highlighter.HighlightStartTag, "<mark>")
-                .Replace(ElasticConstants.Highlighter.HighlightEndTag, "</mark>")
+                .Replace(SqliteConstants.Highlighter.HighlightStartTag, "<mark>")
+                .Replace(SqliteConstants.Highlighter.HighlightEndTag, "</mark>")
                 .ToString();
 
             var markupString = new MarkupString(htmlString);

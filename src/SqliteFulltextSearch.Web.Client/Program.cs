@@ -2,8 +2,8 @@
 
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.FluentUI.AspNetCore.Components;
-using ElasticsearchFulltextExample.Shared.Client;
-using ElasticsearchFulltextExample.Web.Client.Infrastructure;
+using SqliteFulltextSearch.Shared.Client;
+using SqliteFulltextSearch.Web.Client.Infrastructure;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 

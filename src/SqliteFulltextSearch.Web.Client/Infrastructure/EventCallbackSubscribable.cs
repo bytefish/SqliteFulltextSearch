@@ -2,7 +2,7 @@
 
 using Microsoft.AspNetCore.Components;
 
-namespace ElasticsearchFulltextExample.Web.Client.Infrastructure
+namespace SqliteFulltextSearch.Web.Client.Infrastructure
 {
     public sealed class EventCallbackSubscribable<T>
     {

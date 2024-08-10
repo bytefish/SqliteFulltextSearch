@@ -1,9 +1,9 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using ElasticsearchFulltextExample.Shared.Client;
-using ElasticsearchFulltextExample.Shared.Constants;
+using SqliteFulltextSearch.Shared.Client;
+using SqliteFulltextSearch.Shared.Constants;
 
-namespace ElasticsearchFulltextExample.Web.Client.Pages
+namespace SqliteFulltextSearch.Web.Client.Pages
 {
     public partial class Manage
     {

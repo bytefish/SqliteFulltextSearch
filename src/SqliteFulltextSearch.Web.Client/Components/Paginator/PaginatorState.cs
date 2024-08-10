@@ -1,6 +1,6 @@
-﻿using ElasticsearchFulltextExample.Web.Client.Infrastructure;
+﻿using SqliteFulltextSearch.Web.Client.Infrastructure;
 
-namespace ElasticsearchFulltextExample.Web.Client.Components
+namespace SqliteFulltextSearch.Web.Client.Components
 {
     /// <summary>
     /// Holds state to represent pagination in a <see cref="FluentDataGrid{TGridItem}"/>.

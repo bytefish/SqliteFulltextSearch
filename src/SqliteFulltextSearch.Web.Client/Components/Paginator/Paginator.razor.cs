@@ -1,8 +1,8 @@
-﻿using ElasticsearchFulltextExample.Web.Client.Infrastructure;
+﻿using SqliteFulltextSearch.Web.Client.Infrastructure;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace ElasticsearchFulltextExample.Web.Client.Components
+namespace SqliteFulltextSearch.Web.Client.Components
 {
     /// <summary>
     /// A component that provides a user interface for <see cref="PaginationState"/>.

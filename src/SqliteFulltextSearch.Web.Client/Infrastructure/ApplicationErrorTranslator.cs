@@ -1,9 +1,9 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using ElasticsearchFulltextExample.Web.Client.Localization;
+using SqliteFulltextSearch.Web.Client.Localization;
 using Microsoft.Extensions.Localization;
 
-namespace ElasticsearchFulltextExample.Web.Client.Infrastructure
+namespace SqliteFulltextSearch.Web.Client.Infrastructure
 {
     public class ApplicationErrorTranslator
     {

@@ -1,6 +1,6 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace ElasticsearchFulltextExample.Web.Client.Models
+namespace SqliteFulltextSearch.Web.Client.Models
 {
     /// <summary>
     /// Sort Options for sorting search results.

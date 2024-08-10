@@ -2,7 +2,7 @@
 
 using Microsoft.AspNetCore.Components;
 
-namespace ElasticsearchFulltextExample.Web.Client.Extensions
+namespace SqliteFulltextSearch.Web.Client.Extensions
 {
     public static class StringExtensions
     {

@@ -1,14 +1,14 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using ElasticsearchFulltextExample.Web.Client.Infrastructure;
-using ElasticsearchFulltextExample.Web.Client.Localization;
-using ElasticsearchFulltextExample.Web.Client.Models;
+using SqliteFulltextSearch.Web.Client.Infrastructure;
+using SqliteFulltextSearch.Web.Client.Localization;
+using SqliteFulltextSearch.Web.Client.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using ElasticsearchFulltextExample.Shared.Client;
-using ElasticsearchFulltextExample.Shared.Models;
+using SqliteFulltextSearch.Shared.Client;
+using SqliteFulltextSearch.Shared.Models;
 
-namespace ElasticsearchFulltextExample.Web.Client.Pages
+namespace SqliteFulltextSearch.Web.Client.Pages
 {
     public partial class Index
     {
