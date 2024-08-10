@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using SqliteFulltextSearch.Database;
 using SqliteFulltextSearch.Database.Model;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 
@@ -146,16 +147,15 @@ namespace ElasticsearchFulltextExample.Api.Services
 
             // Build the raw SQLite FTS5 Query
             var sql = @"
-                SELECT rowid as document_id,  
-                    highlight(fts_documents, 0, '<b>', '</b>') title, 
-                    highlight(fts_documents, 1, '<b>', '</b>') content
+                SELECT d.document_id, d.title, d.filename, 
+                    snippet(f.fts_document, 0, 'match→', '←match', '', 32) match_title, 
+                    snippet(f.fts_document, 1, 'match→', '←match', '', 32) match_content
                 FROM 
-                    fts_documents 
+                    fts_document f
+                        INNER JOIN document d on f.row_id = d.document_id
                 WHERE 
-                    fts_documents MATCH '{title, content}: @query' 
-                ORDER BY rank
-                LIMIT @size
-                OFFSET @from";
+                    fts_document MATCH '{title content}: OpenCV' 
+                ORDER BY rank";
 
             // Set the Query as a Parameter to avoid SQL Injections
             var parameters = new[]
@@ -178,6 +178,9 @@ namespace ElasticsearchFulltextExample.Api.Services
 
             // So we know how long Sqlite took.
             var tookInMilliseconds = executionTimer.ElapsedMilliseconds;
+
+            var total = matches.Count;
+
             var hits = matches
                 .Skip(from)
                 .Take(size)
@@ -199,51 +202,10 @@ namespace ElasticsearchFulltextExample.Api.Services
             _logger.TraceMethodEntry();
 
             
+
             var searchSuggestions = ConvertToSearchSuggestions(query, suggestResponse);
 
             return searchSuggestions;
-        }
-
-        public async Task<List<SearchStatistics>> GetSearchStatisticsAsync(CancellationToken cancellationToken)
-        {
-            var indicesStatsResponse = await _elasticsearchSearchClient
-                .GetSearchStatistics(cancellationToken)
-                .ConfigureAwait(false);
-
-            var searchStatistics = ConvertToSearchStatistics(indicesStatsResponse);
-
-            return searchStatistics;
-        }
-
-        public static List<SearchStatistics> ConvertToSearchStatistics(IndicesStatsResponse indicesStatsResponse)
-        {
-            if (indicesStatsResponse.Indices == null)
-            {
-                throw new Exception("No statistics available");
-            }
-
-            return indicesStatsResponse.Indices
-                .Select(x => ConvertToSearchStatistics(x.Key, x.Value))
-                .ToList();
-        }
-
-        public static SearchStatistics ConvertToSearchStatistics(string indexName, IndicesStats indexStats)
-        {
-            return new SearchStatistics
-            {
-                IndexName = indexName,
-                IndexSizeInBytes = indexStats.Total?.Store?.SizeInBytes,
-                TotalNumberOfDocumentsIndexed = indexStats.Total?.Docs?.Count,
-                NumberOfDocumentsCurrentlyBeingIndexed = indexStats.Total?.Indexing?.IndexCurrent,
-                TotalNumberOfFetches = indexStats.Total?.Search?.FetchTotal,
-                NumberOfFetchesCurrentlyInProgress = indexStats.Total?.Search?.FetchCurrent,
-                TotalNumberOfQueries = indexStats.Total?.Search?.QueryTotal,
-                NumberOfQueriesCurrentlyInProgress = indexStats.Total?.Search?.QueryCurrent,
-                TotalTimeSpentBulkIndexingDocumentsInMilliseconds = indexStats.Total?.Bulk?.TotalTimeInMillis,
-                TotalTimeSpentIndexingDocumentsInMilliseconds = indexStats.Total?.Bulk?.TotalTimeInMillis,
-                TotalTimeSpentOnFetchesInMilliseconds = indexStats.Total?.Search?.FetchTimeInMillis,
-                TotalTimeSpentOnQueriesInMilliseconds = indexStats.Total?.Search?.QueryTimeInMillis,
-            };
         }
 
         /// <summary>
@@ -256,8 +218,7 @@ namespace ElasticsearchFulltextExample.Api.Services
         {
             _logger.TraceMethodEntry();
 
-            return await _elasticsearchSearchClient
-                .DeleteAsync(documentId.ToString(CultureInfo.InvariantCulture), cancellationToken);
+            return null;
         }
 
         /// <summary>
@@ -270,20 +231,7 @@ namespace ElasticsearchFulltextExample.Api.Services
         {
             _logger.TraceMethodEntry();
 
-            return await _elasticsearchSearchClient
-                .DeleteAsync(documentId.ToString(CultureInfo.InvariantCulture), cancellationToken);
-        }
-
-        /// <summary>
-        /// Pings the Elasticsearch Cluster.
-        /// </summary>
-        /// <param name="cancellationToken">Cancellation Token</param>
-        /// <returns>Ping Response from Elasticsearch</returns>
-        public async Task<PingResponse> PingAsync(CancellationToken cancellationToken)
-        {
-            _logger.TraceMethodEntry();
-
-            return await _elasticsearchSearchClient.PingAsync(cancellationToken: cancellationToken);
+            return null;
         }
 
         /// <summary>
@@ -292,14 +240,14 @@ namespace ElasticsearchFulltextExample.Api.Services
         /// <param name="query">Query Text</param>
         /// <param name="searchResponse">Raw Search Response</param>
         /// <returns>Converted Search Suggestions</returns>
-        private SearchSuggestions ConvertToSearchSuggestions(string query, SearchResponse<ElasticsearchDocument> searchResponse)
+        private SearchSuggestions ConvertToSearchSuggestions(string query, List<Suggestion> suggestions)
         {
             _logger.TraceMethodEntry();
 
             return new SearchSuggestions
             {
                 Query = query,
-                Results = GetSuggestions(searchResponse)
+                Results = GetSuggestions(suggestions)
             };
         }
 
@@ -308,62 +256,17 @@ namespace ElasticsearchFulltextExample.Api.Services
         /// </summary>
         /// <param name="searchResponse">Raw Elasticsearch Search Response</param>
         /// <returns>Lust of Suggestions</returns>
-        private List<SearchSuggestion> GetSuggestions(SearchResponse<ElasticsearchDocument> searchResponse)
+        private List<SearchSuggestion> GetSuggestions(List<Suggestion> suggestions)
         {
             _logger.TraceMethodEntry();
 
-            if (searchResponse == null)
-            {
-                return [];
-            }
-
-            var suggest = searchResponse.Suggest;
-
-            if (suggest == null)
-            {
-                return [];
-            }
-
-            if (!suggest.ContainsKey("suggest"))
-            {
-                return [];
-            }
-
-            var suggestions = suggest["suggest"];
-
-            if (suggestions == null)
-            {
-                return [];
-            }
-
-            var result = new List<SearchSuggestion>();
+            List<SearchSuggestion> result = [];
 
             foreach (var suggestion in suggestions)
             {
-                var completionSuggest = suggestion as CompletionSuggest<ElasticsearchDocument>;
+                var text = suggestion.Name;
 
-                // This is not a Completion Suggest...
-                if (completionSuggest == null)
-                {
-                    if (_logger.IsInformationEnabled())
-                    {
-                        _logger.LogInformation("Suggestion {Suggestion} is no Completion Suggestion. Ignored.", suggest);
-                    }
-
-                    continue;
-                }
-
-                var offset = completionSuggest.Offset;
-                var length = completionSuggest.Length;
-
-                foreach (var option in completionSuggest.Options)
-                {
-                    var text = option.Text;
-                    var prefix = option.Text.Substring(offset, Math.Min(length, text.Length));
-                    var highlight = ReplaceAt(option.Text, offset, length, $"<strong>{prefix}</strong>");
-
-                    result.Add(new SearchSuggestion { Text = text, Highlight = highlight });
-                }
+                result.Add(new SearchSuggestion { Text = text, Highlight = text });
             }
 
             return result;
@@ -392,11 +295,11 @@ namespace ElasticsearchFulltextExample.Api.Services
         /// <param name="query">Original Query</param>
         /// <param name="searchResponse">Search Response from Elasticsearch</param>
         /// <returns>Search Results for a given Query</returns>
-        private SearchResults ConvertToSearchResults(string query, int from, int size, long tookInMilliseconds, List<Document> hits)
+        private SearchResults ConvertToSearchResults(string query, int total, int from, int size, long tookInMilliseconds, List<Document> documents)
         {
             _logger.TraceMethodEntry();
 
-            if (hits.Count == 0)
+            if (documents.Count == 0)
             {
                 return new SearchResults
                 {
@@ -411,26 +314,16 @@ namespace ElasticsearchFulltextExample.Api.Services
 
             List<SearchResult> searchResults = [];
 
-            foreach (var hit in hits)
+            foreach (var document in documents)
             {
-                if (hit.Source == null)
-                {
-                    if (_logger.IsWarningEnabled())
-                    {
-                        _logger.LogWarning("Got a hit, but it has no source (Query = '{Query}', Hit = '{Hit}')", query, hit);
-                    }
-
-                    continue;
-                }
-
                 var searchResult = new SearchResult
                 {
-                    Identifier = hit.Source.Id,
-                    Title = hit.Source.Title,
-                    Filename = hit.Source.Filename,
+                    Identifier = document.Id.ToString(),
+                    Title = document.Title,
+                    Filename = document.Filename,
                     Keywords = hit.Source.Keywords.ToList(),
                     Matches = GetMatches(hit.Highlight),
-                    Url = $"{_options.BaseUri}/raw/{hit.Source.Id}"
+                    Url = $"{_options.BaseUri}/raw/{document.Id}"
                 };
 
                 searchResults.Add(searchResult);
@@ -439,42 +332,12 @@ namespace ElasticsearchFulltextExample.Api.Services
             return new SearchResults
             {
                 Query = query,
+                Total = total,
                 From = from,
                 Size = size,
-                Total = searchResponse.Total,
-                TookInMilliseconds = searchResponse.Took,
+                TookInMilliseconds = tookInMilliseconds,
                 Results = searchResults
             };
-        }
-
-        private List<string> GetMatches(IReadOnlyDictionary<string, IReadOnlyCollection<string>>? highlight)
-        {
-            _logger.TraceMethodEntry();
-
-            if (highlight == null)
-            {
-                return [];
-            }
-
-            return GetMatchesForField(highlight, "attachment.content");
-        }
-
-        private List<string> GetMatchesForField(IReadOnlyDictionary<string, IReadOnlyCollection<string>> highlight, string field)
-        {
-            _logger.TraceMethodEntry();
-
-            if (highlight == null)
-            {
-                return [];
-            }
-
-            if (!highlight.TryGetValue(field, out var matches))
-            {
-                return [];
-            }
-
-            return matches
-                .ToList();
         }
     }
 }

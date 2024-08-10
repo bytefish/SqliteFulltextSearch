@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS document (
 CREATE TABLE IF NOT EXISTS keyword (
     keyword_id integer PRIMARY KEY AUTOINCREMENT,
     name text not null
-        CHECK (length(preferred_name) <= 255),
+        CHECK (length(name) <= 255),
     last_edited_by integer not null,
     row_version integer default 1,
     valid_from text not null default (strftime('%Y-%m-%d %H:%M:%f', 'now')),
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS keyword (
 CREATE TABLE IF NOT EXISTS suggestion (
     suggestion_id integer PRIMARY KEY AUTOINCREMENT,
     name text not null
-        CHECK (length(preferred_name) <= 255),
+        CHECK (length(name) <= 255),
     last_edited_by integer not null,
     row_version integer default 1,
     valid_from text not null default (strftime('%Y-%m-%d %H:%M:%f', 'now')),
@@ -476,13 +476,18 @@ VALUES
 INSERT INTO 
     keyword(keyword_id, name, last_edited_by)
 VALUES 
-    (3, 'OpenCV', 1);
+    (2, 'OpenCV', 1);
     
 INSERT INTO 
     document_keyword(document_keyword_id, document_id, keyword_id, last_edited_by)
 VALUES 
     (1, 1, 1, 1);
     
+INSERT INTO 
+    document_keyword(document_keyword_id, document_id, keyword_id, last_edited_by)
+VALUES 
+    (2, 1, 2, 1);
+
 INSERT INTO 
     document_keyword(document_keyword_id, document_id, keyword_id, last_edited_by)
 VALUES 
@@ -520,3 +525,30 @@ WHERE
 ORDER BY rank
 LIMIT 5
 OFFSET 0;
+
+
+WITH documents_cte AS 
+(
+    SELECT f.rowid document_id, 
+        snippet(f.fts_document, 0, 'match→', '←match', '', 32) match_title, 
+        snippet(f.fts_document, 1, 'match→', '←match', '', 32) match_content
+    FROM 
+        fts_document f
+    WHERE 
+        f.fts_document MATCH '{title content}: OpenCV' 
+    ORDER BY f.rank
+) 
+SELECT json_object(
+    'document_id', documents_cte.document_id,
+    'match_title', documents_cte.match_title,
+    'match_content', documents_cte.match_content,
+    'keywords', (SELECT json_group_array(k.name)
+                 FROM document_keyword dk
+                    INNER JOIN keyword k on dk.keyword_id = k.keyword_id
+                 WHERE 
+                    dk.document_id = documents_cte.document_id
+     )
+    
+)
+FROM documents_cte; 
+    
