@@ -170,10 +170,9 @@ CREATE TABLE IF NOT EXISTS document_suggestion_history (
     row_version integer,
     valid_from text not null,
     valid_to text not null
-
 );
--- History Triggers "user"
 
+-- History Triggers "user"
 CREATE TRIGGER user_insert_trigger
     AFTER INSERT ON user FOR EACH ROW
 BEGIN
@@ -234,7 +233,7 @@ BEGIN
 
 END;
 
-CREATE TRIGGER document_versioning_update_trigger
+CREATE TRIGGER document_update_trigger
     AFTER UPDATE ON document FOR EACH ROW
 BEGIN
 
@@ -256,7 +255,7 @@ BEGIN
 
 END;
 
-CREATE TRIGGER document_versioning_delete_trigger
+CREATE TRIGGER document_delete_trigger
     AFTER DELETE ON document FOR EACH ROW
 BEGIN
     INSERT INTO 
@@ -266,7 +265,7 @@ BEGIN
 END;
 
 -- History Triggers "keyword"
-CREATE TRIGGER keyword_versioning_insert_trigger
+CREATE TRIGGER keyword_insert_trigger
     AFTER INSERT ON keyword FOR EACH ROW
 BEGIN
 
@@ -280,7 +279,7 @@ BEGIN
 END;
 
 
-CREATE TRIGGER keyword_versioning_update_trigger
+CREATE TRIGGER keyword_update_trigger
     AFTER UPDATE ON keyword FOR EACH ROW
 BEGIN
 
@@ -303,7 +302,7 @@ BEGIN
 
 END;
 
-CREATE TRIGGER keyword_versioning_delete_trigger
+CREATE TRIGGER keyword_delete_trigger
     AFTER DELETE ON keyword FOR EACH ROW
 BEGIN
 
@@ -315,7 +314,7 @@ BEGIN
 END;
 
 -- History Triggers "suggestion"
-CREATE TRIGGER suggestion_versioning_insert_trigger
+CREATE TRIGGER suggestion_insert_trigger
     AFTER INSERT ON suggestion FOR EACH ROW
 BEGIN
 
@@ -328,7 +327,7 @@ BEGIN
 
 END;
 
-CREATE TRIGGER suggestion_versioning_update_trigger
+CREATE TRIGGER suggestion_update_trigger
     AFTER UPDATE ON suggestion FOR EACH ROW
 BEGIN
 
@@ -350,7 +349,7 @@ BEGIN
 
 END;
 
-CREATE TRIGGER suggestion_versioning_delete_trigger
+CREATE TRIGGER suggestion_delete_trigger
     AFTER DELETE ON suggestion FOR EACH ROW
 BEGIN
     INSERT INTO 
@@ -360,7 +359,7 @@ BEGIN
 END;
 
 -- History Triggers "document_keyword"
-CREATE TRIGGER document_keyword_versioning_insert_trigger
+CREATE TRIGGER document_keyword_insert_trigger
     AFTER INSERT ON document_keyword FOR EACH ROW
 BEGIN
 
@@ -373,7 +372,7 @@ BEGIN
 
 END;
 
-CREATE TRIGGER document_keyword_versioning_update_trigger
+CREATE TRIGGER document_keyword_update_trigger
     AFTER UPDATE ON document_keyword FOR EACH ROW
 BEGIN
 
@@ -395,7 +394,7 @@ BEGIN
 
 END;
 
-CREATE TRIGGER document_keyword_versioning_delete_trigger
+CREATE TRIGGER document_keyword_delete_trigger
     AFTER DELETE ON document_keyword FOR EACH ROW
 BEGIN
 
@@ -407,7 +406,7 @@ BEGIN
 END;
 
 -- History Triggers "document_suggestion"
-CREATE TRIGGER document_suggestion_versioning_insert_trigger
+CREATE TRIGGER document_suggestion_insert_trigger
     AFTER INSERT ON document_suggestion FOR EACH ROW
 BEGIN
 
@@ -420,7 +419,7 @@ BEGIN
 
 END;
 
-CREATE TRIGGER document_suggestion_versioning_update_trigger
+CREATE TRIGGER document_suggestion_update_trigger
     AFTER UPDATE ON document_suggestion FOR EACH ROW
 BEGIN
 
@@ -442,7 +441,7 @@ BEGIN
 
 END;
 
-CREATE TRIGGER document_suggestion_versioning_delete_trigger
+CREATE TRIGGER document_suggestion_delete_trigger
     AFTER DELETE ON document_suggestion FOR EACH ROW
 BEGIN
 
@@ -526,7 +525,7 @@ ORDER BY rank
 LIMIT 5
 OFFSET 0;
 
-
+-- Query for all documents matching "OpenCV"
 WITH documents_cte AS 
 (
     SELECT f.rowid document_id, 
@@ -542,13 +541,19 @@ SELECT json_object(
     'document_id', documents_cte.document_id,
     'match_title', documents_cte.match_title,
     'match_content', documents_cte.match_content,
-    'keywords', (SELECT json_group_array(k.name)
-                 FROM document_keyword dk
-                    INNER JOIN keyword k on dk.keyword_id = k.keyword_id
-                 WHERE 
-                    dk.document_id = documents_cte.document_id
-     )
-    
+    'keywords', (
+        SELECT json_group_array(k.name)
+        FROM document_keyword dk
+            INNER JOIN keyword k on dk.keyword_id = k.keyword_id
+        WHERE 
+            dk.document_id = documents_cte.document_id
+     ),
+     'suggestions', (
+        SELECT json_group_array(s.name)
+        FROM document_suggestion ds
+            INNER JOIN suggestion s on ds.suggestion_id = s.suggestion_id
+        WHERE 
+            ds.document_id = documents_cte.document_id
+     )    
 )
 FROM documents_cte; 
-    
