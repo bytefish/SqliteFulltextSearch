@@ -16,6 +16,7 @@ using SqliteFulltextSearch.Api.Configuration;
 using SqliteFulltextSearch.Api.Services;
 using SqliteFulltextSearch.Database;
 using SqliteFulltextSearch.Api.Endpoints;
+using Microsoft.Data.Sqlite;
 
 public partial class Program {
     private static async Task Main(string[] args)
@@ -53,7 +54,14 @@ public partial class Program {
             // Database
             builder.Services.AddDbContextFactory<ApplicationDbContext>((sp, options) =>
             {
-                var connectionString = builder.Configuration.GetConnectionString("ApplicationDatabase");
+                var connectionStringBuilder = new SqliteConnectionStringBuilder()
+                {
+                    DataSource = builder.Configuration.GetConnectionString("ApplicationDatabase"),
+                    Mode = SqliteOpenMode.ReadWrite,
+                    Cache = SqliteCacheMode.Private
+                };
+
+                var connectionString = connectionStringBuilder.ToString();
 
                 options
                     .EnableSensitiveDataLogging()

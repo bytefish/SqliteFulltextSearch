@@ -24,16 +24,68 @@ namespace SqliteFulltextSearch.Database
 
         public DbSet<DocumentSuggestion> DocumentSuggestions { get; set; }
 
-        public int MyProperty { get; set; }
+        public DbSet<Migration> Migrations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Tables
+            modelBuilder.Entity<Migration>(entity =>
+            {
+                entity.ToTable("migration");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id)
+                    .HasColumnType("integer")
+                    .HasColumnName("migration_id")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Version)
+                    .HasColumnType("text")
+                    .HasColumnName("version")
+                    .HasMaxLength(255)
+                    .IsRequired(true);
+                
+                entity.Property(e => e.Description)
+                    .HasColumnType("text")
+                    .HasColumnName("description")
+                    .HasMaxLength(2000)
+                    .IsRequired(true);
+
+                entity.Property(e => e.RowVersion)
+                    .HasColumnType("integer")
+                    .HasColumnName("row_version")
+                    .IsConcurrencyToken()
+                    .IsRequired(false)
+                    .ValueGeneratedOnAddOrUpdate();
+
+                entity.Property(e => e.LastEditedBy)
+                    .HasColumnType("integer")
+                    .HasColumnName("last_edited_by")
+                    .IsRequired(true);
+
+                entity.Property(e => e.ValidFrom)
+                    .HasColumnType("text")
+                    .HasColumnName("valid_from")
+                    .IsRequired(false)
+                    .ValueGeneratedOnAddOrUpdate();
+
+                entity.Property(e => e.ValidTo)
+                    .HasColumnType("text")
+                    .HasColumnName("valid_from")
+                    .IsRequired(false)
+                    .ValueGeneratedOnAddOrUpdate();
+            });
+
             modelBuilder.Entity<FtsDocument>(entity =>
             {
                 entity.ToTable("fts_document");
 
                 entity.HasKey("rowid");
+
+                entity
+                    .Property(x => x.RowId)
+                    .HasColumnName("rowid");
 
                 entity
                     .Property(x => x.Title)
@@ -55,6 +107,10 @@ namespace SqliteFulltextSearch.Database
 
                 entity.HasKey("rowid");
 
+                entity
+                    .Property(x => x.RowId)
+                    .HasColumnName("rowid");
+                    
                 entity
                     .Property(x => x.Name)
                     .HasColumnName("name");
