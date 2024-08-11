@@ -29,107 +29,106 @@ namespace SqliteFulltextSearch.Web.Client.Pages
         /// </summary>
         private List<ElasticsearchIndexMetrics> _elasticsearchIndexMetrics = new List<ElasticsearchIndexMetrics>();
 
-        protected override async Task OnInitializedAsync()
-        {
-            var codeSearchStatistics = await SearchClient.SearchStatisticsAsync(default);
+        //protected override async Task OnInitializedAsync()
+        //{
+        //    var codeSearchStatistics = await SearchClient.SearchStatisticsAsync(default);
 
-            _elasticsearchIndexMetrics = ConvertToElasticsearchIndexMetric(codeSearchStatistics);
-        }
+        //    _elasticsearchIndexMetrics = ConvertToElasticsearchIndexMetric(codeSearchStatistics);
+        //}
 
-        private List<ElasticsearchIndexMetrics> ConvertToElasticsearchIndexMetric(List<SearchStatisticsDto>? codeSearchStatistics)
-        {
-            if (codeSearchStatistics == null)
-            {
-                return new List<ElasticsearchIndexMetrics>();
-            }
+        //private List<ElasticsearchIndexMetrics> ConvertToElasticsearchIndexMetric(List<SearchStatisticsDto>? codeSearchStatistics)
+        //{
+        //    if (codeSearchStatistics == null)
+        //    {
+        //        return new List<ElasticsearchIndexMetrics>();
+        //    }
 
-            return codeSearchStatistics
-                .Select(x => new ElasticsearchIndexMetrics
-                {
-                    Index = x.IndexName,
-                    Metrics = ConvertToElasticsearchMetrics(x)
-                }).ToList();
+        //    return codeSearchStatistics
+        //        .Select(x => new ElasticsearchIndexMetrics
+        //        {
+        //            Index = x.IndexName,
+        //            Metrics = ConvertToElasticsearchMetrics(x)
+        //        }).ToList();
 
-        }
+        //}
 
-        private List<ElasticsearchMetric> ConvertToElasticsearchMetrics(SearchStatisticsDto codeSearchStatistic)
-        {
-            return new List<ElasticsearchMetric>()
-            {
-                new ElasticsearchMetric
-                {
-                    Name = Loc["Metrics_IndexName"],
-                    Key = "indices[i]",
-                    Value = codeSearchStatistic.IndexName
-                },
-                new ElasticsearchMetric
-                {
-                    Name = Loc["Metrics_IndexSize"],
-                    Key = "indices.store.size_in_bytes",
-                    Value = DataSizeUtils.TotalMegabytesString(codeSearchStatistic.IndexSizeInBytes ?? 0)
-                },
-                new ElasticsearchMetric
-                {
-                    Name = Loc["Metrics_TotalNumberOfDocumentsIndexed"],
-                    Key = "indices.docs.count",
-                    Value = codeSearchStatistic.TotalNumberOfDocumentsIndexed?.ToString()
-                },
-                new ElasticsearchMetric
-                {
-                    Name = Loc["Metrics_NumberOfDocumentsCurrentlyBeingIndexed"],
-                    Key = "indices.indexing.index_current",
-                    Value = codeSearchStatistic.NumberOfDocumentsCurrentlyBeingIndexed?.ToString()
-                },
-                new ElasticsearchMetric
-                {
-                    Name = Loc["Metrics_TotalTimeSpentIndexingDocuments"],
-                    Key = "indices.indexing.index_time_in_millis",
-                    Value = TimeFormattingUtils.MillisecondsToSeconds(codeSearchStatistic.TotalTimeSpentIndexingDocumentsInMilliseconds, string.Empty)
-                },
-                new ElasticsearchMetric
-                {
-                    Name = Loc["Metrics_TotalTimeSpentBulkIndexingDocuments"],
-                    Key = "indices.bulk.total_time_in_millis",
-                    Value = TimeFormattingUtils.MillisecondsToSeconds(codeSearchStatistic.TotalTimeSpentBulkIndexingDocumentsInMilliseconds, string.Empty)
-                },
-                new ElasticsearchMetric
-                {
-                    Name = Loc["Metrics_TotalNumberOfQueries"],
-                    Key = "indices.search.query_total",
-                    Value = codeSearchStatistic.TotalNumberOfQueries?.ToString()
-                },
+        //private List<ElasticsearchMetric> ConvertToElasticsearchMetrics(SearchStatisticsDto codeSearchStatistic)
+        //{
+        //    return new List<ElasticsearchMetric>()
+        //    {
+        //        new ElasticsearchMetric
+        //        {
+        //            Name = Loc["Metrics_IndexName"],
+        //            Key = "indices[i]",
+        //            Value = codeSearchStatistic.IndexName
+        //        },
+        //        new ElasticsearchMetric
+        //        {
+        //            Name = Loc["Metrics_IndexSize"],
+        //            Key = "indices.store.size_in_bytes",
+        //            Value = DataSizeUtils.TotalMegabytesString(codeSearchStatistic.IndexSizeInBytes ?? 0)
+        //        },
+        //        new ElasticsearchMetric
+        //        {
+        //            Name = Loc["Metrics_TotalNumberOfDocumentsIndexed"],
+        //            Key = "indices.docs.count",
+        //            Value = codeSearchStatistic.TotalNumberOfDocumentsIndexed?.ToString()
+        //        },
+        //        new ElasticsearchMetric
+        //        {
+        //            Name = Loc["Metrics_NumberOfDocumentsCurrentlyBeingIndexed"],
+        //            Key = "indices.indexing.index_current",
+        //            Value = codeSearchStatistic.NumberOfDocumentsCurrentlyBeingIndexed?.ToString()
+        //        },
+        //        new ElasticsearchMetric
+        //        {
+        //            Name = Loc["Metrics_TotalTimeSpentIndexingDocuments"],
+        //            Key = "indices.indexing.index_time_in_millis",
+        //            Value = TimeFormattingUtils.MillisecondsToSeconds(codeSearchStatistic.TotalTimeSpentIndexingDocumentsInMilliseconds, string.Empty)
+        //        },
+        //        new ElasticsearchMetric
+        //        {
+        //            Name = Loc["Metrics_TotalTimeSpentBulkIndexingDocuments"],
+        //            Key = "indices.bulk.total_time_in_millis",
+        //            Value = TimeFormattingUtils.MillisecondsToSeconds(codeSearchStatistic.TotalTimeSpentBulkIndexingDocumentsInMilliseconds, string.Empty)
+        //        },
+        //        new ElasticsearchMetric
+        //        {
+        //            Name = Loc["Metrics_TotalNumberOfQueries"],
+        //            Key = "indices.search.query_total",
+        //            Value = codeSearchStatistic.TotalNumberOfQueries?.ToString()
+        //        },
 
-                new ElasticsearchMetric
-                {
-                    Name = Loc["Metrics_TotalTimeSpentOnQueries"],
-                    Key = "indices.search.query_time_in_millis",
-                    Value = TimeFormattingUtils.MillisecondsToSeconds(codeSearchStatistic.TotalTimeSpentOnQueriesInMilliseconds, string.Empty)
-                },
-                new ElasticsearchMetric
-                {
-                    Name = Loc["Metrics_NumberOfQueriesCurrentlyInProgress"],
-                    Key = "indices.search.query_current",
-                    Value = codeSearchStatistic.NumberOfQueriesCurrentlyInProgress?.ToString()
-                },
-                new ElasticsearchMetric
-                {
-                    Name = Loc["Metrics_TotalNumberOfFetches"],
-                    Key = "indices.search.fetch_total",
-                    Value = codeSearchStatistic.TotalNumberOfFetches?.ToString()
-                },
-                new ElasticsearchMetric
-                {
-                    Name = Loc["Metrics_TotalTimeSpentOnFetches"],
-                    Key = "indices.search.fetch_time_in_millis",
-                    Value = TimeFormattingUtils.MillisecondsToSeconds(codeSearchStatistic.TotalTimeSpentOnFetchesInMilliseconds, string.Empty)
-                },
-                new ElasticsearchMetric
-                {
-                    Name = Loc["Metrics_NumberOfFetchesCurrentlyInProgress"],
-                    Key = "indices.search.fetch_current",
-                    Value = codeSearchStatistic.NumberOfFetchesCurrentlyInProgress?.ToString()
-                },
-            };
-        }
+        //        new ElasticsearchMetric
+        //        {
+        //            Name = Loc["Metrics_TotalTimeSpentOnQueries"],
+        //            Key = "indices.search.query_time_in_millis",
+        //            Value = TimeFormattingUtils.MillisecondsToSeconds(codeSearchStatistic.TotalTimeSpentOnQueriesInMilliseconds, string.Empty)
+        //        },
+        //        new ElasticsearchMetric
+        //        {
+        //            Name = Loc["Metrics_NumberOfQueriesCurrentlyInProgress"],
+        //            Key = "indices.search.query_current",
+        //            Value = codeSearchStatistic.NumberOfQueriesCurrentlyInProgress?.ToString()
+        //        },
+        //        new ElasticsearchMetric
+        //        {
+        //            Name = Loc["Metrics_TotalNumberOfFetches"],
+        //            Key = "indices.search.fetch_total",
+        //            Value = codeSearchStatistic.TotalNumberOfFetches?.ToString()
+        //        },
+        //        new ElasticsearchMetric
+        //        {
+        //            Name = Loc["Metrics_TotalTimeSpentOnFetches"],
+        //            Key = "indices.search.fetch_time_in_millis",
+        //            Value = TimeFormattingUtils.MillisecondsToSeconds(codeSearchStatistic.TotalTimeSpentOnFetchesInMilliseconds, string.Empty)
+        //        },
+        //        new ElasticsearchMetric
+        //        {
+        //            Name = Loc["Metrics_NumberOfFetchesCurrentlyInProgress"],
+        //            Key = "indices.search.fetch_current",
+        //            Value = codeSearchStatistic.NumberOfFetchesCurrentlyInProgress?.ToString()
+        //        },
+        //    };
     }
 }

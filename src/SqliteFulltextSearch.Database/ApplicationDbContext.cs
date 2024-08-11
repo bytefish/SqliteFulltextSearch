@@ -26,14 +26,6 @@ namespace SqliteFulltextSearch.Database
 
         public int MyProperty { get; set; }
 
-        [DbFunction]
-        public string Highlight(string match, string column, string open, string close)
-            => throw new NotImplementedException();
-
-        [DbFunction]
-        public string Snippet(string match, string column, string open, string close, string ellips, int count)
-            => throw new NotImplementedException();
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Tables
@@ -52,15 +44,23 @@ namespace SqliteFulltextSearch.Database
                     .HasColumnName("content");
 
                 entity
-                    .Property(fts => fts.Match)
-                    .HasColumnName("fts_document");
-
-                entity
-                    .Property(fts => fts.Rank)
-                    .HasColumnName("rank");
-
-                entity
                     .HasOne(fts => fts.Document)
+                    .WithOne()
+                    .HasForeignKey<FtsDocument>(fts => fts.RowId);
+            });
+
+            modelBuilder.Entity<FtsSuggestion>(entity =>
+            {
+                entity.ToTable("fts_suggestion");
+
+                entity.HasKey("rowid");
+
+                entity
+                    .Property(x => x.Name)
+                    .HasColumnName("name");
+
+                entity
+                    .HasOne(fts => fts.Suggestion)
                     .WithOne()
                     .HasForeignKey<FtsDocument>(fts => fts.RowId);
             });

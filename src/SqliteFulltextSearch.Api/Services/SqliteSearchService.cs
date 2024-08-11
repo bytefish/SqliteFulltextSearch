@@ -1,8 +1,6 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.Core.Search;
-using Elastic.Clients.Elasticsearch.IndexManagement;
 using SqliteFulltextSearch.Api.Configuration;
 using SqliteFulltextSearch.Api.Infrastructure.Exceptions;
 using SqliteFulltextSearch.Api.Models;
@@ -14,12 +12,8 @@ using SqliteFulltextSearch.Database;
 using SqliteFulltextSearch.Database.Model;
 using SqliteFulltextSearch.Shared.Constants;
 using SqliteFulltextSearch.Shared.Models;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Globalization;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace SqliteFulltextSearch.Api.Services
 {

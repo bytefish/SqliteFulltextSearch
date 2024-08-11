@@ -15,6 +15,7 @@ using SqliteFulltextSearch.Api.Infrastructure.Authentication;
 using SqliteFulltextSearch.Api.Configuration;
 using SqliteFulltextSearch.Api.Services;
 using SqliteFulltextSearch.Database;
+using SqliteFulltextSearch.Api.Endpoints;
 
 public partial class Program {
     private static async Task Main(string[] args)
@@ -52,11 +53,12 @@ public partial class Program {
             // Database
             builder.Services.AddDbContextFactory<ApplicationDbContext>((sp, options) =>
             {
+                var connectionString = builder.Configuration.GetConnectionString("ApplicationDatabase");
+
                 options
                     .EnableSensitiveDataLogging()
-                    .UseSqlite();
-
-            }, ServiceLifetime.Scoped);
+                    .UseSqlite(connectionString);
+            });
 
             // Authentication
             builder.Services.AddScoped<CurrentUser>();
@@ -94,13 +96,12 @@ public partial class Program {
             builder.Services.AddSingleton<ExceptionToErrorMapper>();
 
             // Application Services
-            builder.Services.AddSingleton<DocumentService>();
-            builder.Services.AddSingleton<SqliteSearchService>();
             builder.Services.AddSingleton<UserService>();
-
+            builder.Services.AddSingleton<DocumentService>();
+            builder.Services.AddSingleton<PdfDocumentService>();
+            builder.Services.AddSingleton<SqliteSearchService>();
 
             builder.Services.Configure<ApplicationOptions>(builder.Configuration.GetSection("Application"));
-
 
             // Route Constraints
             // ...
@@ -177,8 +178,8 @@ public partial class Program {
             var app = builder.Build();
 
             // Use a Controller for handling the ASP.NET Core lower-level errors.
-            app.UseExceptionHandler("/error");
-            app.UseStatusCodePagesWithReExecute("/error/{0}");
+            //app.UseExceptionHandler("/error");
+            //app.UseStatusCodePagesWithReExecute("/error/{0}");
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -196,7 +197,9 @@ public partial class Program {
 
             app.UseAuthorization();
             app.UseRateLimiter();
-            app.MapControllers();
+
+            // Add API Endpoints
+            app.MapSearchEndpoints();
 
             app.Run();
         }
