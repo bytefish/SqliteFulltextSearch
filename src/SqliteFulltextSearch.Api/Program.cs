@@ -118,9 +118,9 @@ public partial class Program {
             builder.Services.AddSingleton<WordDocumentReader>();
 
             // Infrastructure (Document Processors)
-            builder.Services.AddSingleton<PdfDocumentProcessor>();
-            builder.Services.AddSingleton<WordDocumentProcessor>();
-            builder.Services.AddSingleton<TextDocumentProcessor>();
+            builder.Services.AddSingleton<IDocumentProcessor, PdfDocumentProcessor>();
+            builder.Services.AddSingleton<IDocumentProcessor, WordDocumentProcessor>();
+            builder.Services.AddSingleton<IDocumentProcessor, TextDocumentProcessor>();
 
             // Infrastructure (Document Processing Engine)
             builder.Services.AddSingleton<DocumentProcessingEngine>();

@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using Microsoft.AspNetCore.Mvc.Formatters.Xml;
 using SqliteFulltextSearch.Api.Models;
 using SqliteFulltextSearch.Database.Model;
 using SqliteFulltextSearch.Shared.Infrastructure;
@@ -23,7 +24,7 @@ namespace SqliteFulltextSearch.Api.Infrastructure.Word
 
             using (var ms = new MemoryStream(document.Data))
             {
-                using(var wpd = WordprocessingDocument.Create(ms, DocumentFormat.OpenXml.WordprocessingDocumentType.Document)) 
+                using(var wpd = WordprocessingDocument.Open(ms, true)) 
                 {
                     var element = wpd.MainDocumentPart?.Document.Body;
 

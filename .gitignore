@@ -205,3 +205,4 @@ elastic-data2
 search-data
 app.db
 *.db
+*.db-journal
