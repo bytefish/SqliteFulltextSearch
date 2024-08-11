@@ -5,6 +5,7 @@ using SqliteFulltextSearch.Api.Models;
 using SqliteFulltextSearch.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using SqliteFulltextSearch.Api.Infrastructure.Errors;
+using SqliteFulltextSearch.Shared.Constants;
 
 namespace SqliteFulltextSearch.Api.Endpoints
 {
@@ -44,80 +45,6 @@ namespace SqliteFulltextSearch.Api.Endpoints
             return app;
         }
 
-        #region Converters
-
-        static SearchSuggestionsDto Convert(SearchSuggestions source)
-        {
-            return new SearchSuggestionsDto
-            {
-                Query = source.Query,
-                Results = Convert(source.Results)
-            };
-        }
-
-        static List<SearchSuggestionDto> Convert(List<SearchSuggestion> source)
-        {
-            return source
-                .Select(suggestion => Convert(suggestion))
-                .ToList();
-        }
-
-        static SearchSuggestionDto Convert(SearchSuggestion source)
-        {
-            return new SearchSuggestionDto
-            {
-                Text = source.Text,
-                Highlight = source.Highlight
-            };
-        }
-
-        static async Task<byte[]> GetBytesAsync(IFormFile formFile)
-        {
-            using (var memoryStream = new MemoryStream())
-            {
-                await formFile.CopyToAsync(memoryStream);
-
-                return memoryStream.ToArray();
-            }
-        }
-
-
-        static SearchResultsDto Convert(SearchResults source)
-        {
-            return new SearchResultsDto
-            {
-                Query = source.Query,
-                From = source.From,
-                Size = source.Size,
-                TookInMilliseconds = source.TookInMilliseconds,
-                Total = source.Total,
-                Results = Convert(source.Results)
-            };
-        }
-
-        static List<SearchResultDto> Convert(List<SearchResult> source)
-        {
-            return source
-                .Select(searchResult => Convert(searchResult))
-                .ToList();
-        }
-
-        static SearchResultDto Convert(SearchResult source)
-        {
-            return new SearchResultDto
-            {
-                Identifier = source.Identifier,
-                Title = source.Title,
-                Filename = source.Filename,
-                Keywords = source.Keywords,
-                Matches = source.Matches,
-                Url = source.Url
-            };
-        }
-
-
-        #endregion
-
         public static async Task<IResult> DeleteAllAsync(SqliteSearchService sqliteSearchService, CancellationToken cancellationToken)
         {
             await sqliteSearchService
@@ -155,17 +82,26 @@ namespace SqliteFulltextSearch.Api.Endpoints
 
         public static async Task<IResult> UploadAsync(DocumentService documentService,
             SqliteSearchService sqliteSearchService,
-            [FromForm(Name = "title")] string title,
-            [FromForm(Name = "suggestions")] List<string>? suggestions,
-            [FromForm(Name = "keywords")] List<string>? keywords,
-            [FromForm(Name = "data")] IFormFile data,
+            IFormCollection form,
             CancellationToken cancellationToken)
         {
-            var fileBytes = await GetBytesAsync(data)
+            (string Title, List<string> Suggestions, List<string> Keywords, IFormFile? Data) upload = (
+                GetAsString(form, FileUploadNames.Title),
+                GetAsList(form, FileUploadNames.Suggestions),
+                GetAsList(form, FileUploadNames.Keywords),
+                form.Files[FileUploadNames.Data]);
+
+            // Add some better validation here ...
+            if(upload.Data == null)
+            {
+                return TypedResults.BadRequest("Invalid Data");
+            }
+
+            var fileBytes = await GetBytesAsync(upload.Data)
                 .ConfigureAwait(false);
 
             var document = await documentService
-                .CreateDocumentAsync(title, data.FileName, fileBytes, suggestions, keywords, Constants.Users.DataConversionUserId, cancellationToken)
+                .CreateDocumentAsync(upload.Title, upload.Data.FileName, fileBytes, upload.Suggestions, upload.Keywords, Constants.Users.DataConversionUserId, cancellationToken)
                 .ConfigureAwait(false);
 
             await sqliteSearchService.IndexDocumentAsync(document.Id, cancellationToken);
@@ -187,5 +123,100 @@ namespace SqliteFulltextSearch.Api.Endpoints
 
             return TypedResults.Ok(searchResultsDto);
         }
+
+        #region Converters
+
+        static SearchSuggestionsDto Convert(SearchSuggestions source)
+        {
+            return new SearchSuggestionsDto
+            {
+                Query = source.Query,
+                Results = Convert(source.Results)
+            };
+        }
+
+        static List<SearchSuggestionDto> Convert(List<SearchSuggestion> source)
+        {
+            return source
+                .Select(suggestion => Convert(suggestion))
+                .ToList();
+        }
+
+        static SearchSuggestionDto Convert(SearchSuggestion source)
+        {
+            return new SearchSuggestionDto
+            {
+                Text = source.Text,
+                Highlight = source.Highlight
+            };
+        }
+
+        static SearchResultsDto Convert(SearchResults source)
+        {
+            return new SearchResultsDto
+            {
+                Query = source.Query,
+                From = source.From,
+                Size = source.Size,
+                TookInMilliseconds = source.TookInMilliseconds,
+                Total = source.Total,
+                Results = Convert(source.Results)
+            };
+        }
+
+        static List<SearchResultDto> Convert(List<SearchResult> source)
+        {
+            return source
+                .Select(searchResult => Convert(searchResult))
+                .ToList();
+        }
+
+        static SearchResultDto Convert(SearchResult source)
+        {
+            return new SearchResultDto
+            {
+                Identifier = source.Identifier,
+                Title = source.Title,
+                Filename = source.Filename,
+                Keywords = source.Keywords,
+                Matches = source.Matches,
+                Url = source.Url
+            };
+        }
+
+
+        #endregion
+
+        #region Helper Methods
+
+        private static async Task<byte[]> GetBytesAsync(IFormFile formFile)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                await formFile.CopyToAsync(memoryStream);
+
+                return memoryStream.ToArray();
+            }
+        }
+
+        private static string GetAsString(IFormCollection form, string parameterName)
+        {
+            return form[parameterName].ToString();
+        }
+
+        private static List<string> GetAsList(IFormCollection form, string parameterName)
+        {
+            var orderedKeys = form.Keys
+                .Where(x => x.StartsWith(parameterName))
+                .Order();
+
+            var result = orderedKeys
+                .Select(x => form[x].ToString())
+                .ToList();
+
+            return result;
+        }
+
+        #endregion
     }
 }
