@@ -20,6 +20,8 @@ using Microsoft.Data.Sqlite;
 using SqliteFulltextSearch.Api.Hosting;
 using SqliteFulltextSearch.Database.Infrastructure;
 using SqliteFulltextSearch.Api.Infrastructure.Pdf;
+using SqliteFulltextSearch.Api.Infrastructure.Word;
+using SqliteFulltextSearch.Api.Infrastructure.Processor;
 
 public partial class Program {
     private static async Task Main(string[] args)
@@ -109,8 +111,19 @@ public partial class Program {
 
             builder.Services.AddSingleton<ExceptionToErrorMapper>();
 
-            // Infrastructure
+            builder.Services.AddExceptionHandler<ApplicationErrorExceptionHandler>();
+
+            // Infrastructure (Document Readers)
             builder.Services.AddSingleton<PdfDocumentReader>();
+            builder.Services.AddSingleton<WordDocumentReader>();
+
+            // Infrastructure (Document Processors)
+            builder.Services.AddSingleton<PdfDocumentProcessor>();
+            builder.Services.AddSingleton<WordDocumentProcessor>();
+            builder.Services.AddSingleton<TextDocumentProcessor>();
+
+            // Infrastructure (Document Processing Engine)
+            builder.Services.AddSingleton<DocumentProcessingEngine>();
 
             // Application Services
             builder.Services.AddSingleton<UserService>();
@@ -188,11 +201,7 @@ public partial class Program {
             });
 
             var app = builder.Build();
-
-            // Use a Controller for handling the ASP.NET Core lower-level errors.
-            //app.UseExceptionHandler("/error");
-            //app.UseStatusCodePagesWithReExecute("/error/{0}");
-
+            
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

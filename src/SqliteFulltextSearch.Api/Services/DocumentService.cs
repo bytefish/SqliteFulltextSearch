@@ -5,8 +5,11 @@ using SqliteFulltextSearch.Api.Infrastructure.Exceptions;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+
+using SqliteFulltextSearch.Shared.Infrastructure;
 using SqliteFulltextSearch.Database;
 using SqliteFulltextSearch.Database.Model;
+using SqliteFulltextSearch.Api.Infrastructure.Processor;
 
 namespace SqliteFulltextSearch.Api.Services
 {
@@ -16,13 +19,15 @@ namespace SqliteFulltextSearch.Api.Services
 
         private readonly ApplicationOptions _options;
         private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory;
+        private readonly DocumentProcessingEngine _documentProcessingEngine;
         private readonly FileExtensionContentTypeProvider _fileExtensionContentTypeProvider;
 
-        public DocumentService(ILogger<SqliteSearchService> logger, IOptions<ApplicationOptions> options, IDbContextFactory<ApplicationDbContext> dbContextFactory)
+        public DocumentService(ILogger<SqliteSearchService> logger, IOptions<ApplicationOptions> options, IDbContextFactory<ApplicationDbContext> dbContextFactory, DocumentProcessingEngine documentProcessingEngine)
         {
             _logger = logger;
             _options = options.Value;
             _dbContextFactory = dbContextFactory;
+            _documentProcessingEngine = documentProcessingEngine;
             _fileExtensionContentTypeProvider = new FileExtensionContentTypeProvider();
         }
 
@@ -141,6 +146,18 @@ namespace SqliteFulltextSearch.Api.Services
                     }
                 }
 
+                var ftsDocument = await _documentProcessingEngine
+                    .GetFtsDocumentAsync(document, cancellationToken)
+                    .ConfigureAwait(false);
+
+                await context.FtsDocuments
+                    .AddAsync(ftsDocument, cancellationToken)
+                    .ConfigureAwait(false);
+
+                await context
+                    .SaveChangesAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
                 // Commit the Transaction
                 await transaction
                     .CommitAsync(cancellationToken)
@@ -174,7 +191,7 @@ namespace SqliteFulltextSearch.Api.Services
             var fileType = GetContentType(document);
             var fileBytes = document.Data;
 
-            return(fileName, fileType, fileBytes);
+            return (fileName, fileType, fileBytes);
         }
 
         private string GetContentType(Document document)
