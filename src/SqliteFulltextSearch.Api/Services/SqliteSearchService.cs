@@ -1,4 +1,4 @@
-﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿ // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Elastic.Clients.Elasticsearch;
 using SqliteFulltextSearch.Api.Configuration;

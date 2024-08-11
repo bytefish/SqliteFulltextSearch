@@ -435,7 +435,7 @@ BEGIN
 END;
 
 -- History Triggers "document_keyword"
-CREATE TRIGGER document_keyword_insert_trigger
+CREATE TRIGGER IF NOT EXISTS document_keyword_insert_trigger
     AFTER INSERT ON document_keyword FOR EACH ROW
 BEGIN
 
@@ -536,12 +536,13 @@ CREATE VIRTUAL TABLE IF NOT EXISTS fts_document
 CREATE VIRTUAL TABLE IF NOT EXISTS fts_suggestion 
     USING fts5(name);
 
--- Set the Database Version for an initial create
-INSERT INTO migration(migration_id, version, description, last_edited_by) 
-SELECT 1, '1.0',  'Initial Database Creation (Version 1.0)', 1
-WHERE NOT EXISTS(SELECT 1 FROM migration);
-
 -- Insert Fixed data
 INSERT OR IGNORE INTO user(user_id, email, preferred_name, last_edited_by) 
-    VALUES 
-        (1, 'philipp@bytefish.de', 'Data Conversion User', 1);
+SELECT 1, 'philipp@bytefish.de', 'Data Conversion User', 1
+WHERE NOT EXISTS(SELECT 1 FROM user where user_id = 1);        
+
+-- Set the Database Version for an initial create
+INSERT INTO 
+    migration(migration_id, version, description, last_edited_by) 
+SELECT 1, '1.0',  'Initial Database Creation (Version 1.0)', 1
+WHERE NOT EXISTS(SELECT 1 FROM migration);

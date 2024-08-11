@@ -72,16 +72,16 @@ namespace SqliteFulltextSearch.Database
 
                 entity.Property(e => e.ValidTo)
                     .HasColumnType("text")
-                    .HasColumnName("valid_from")
+                    .HasColumnName("valid_to")
                     .IsRequired(false)
                     .ValueGeneratedOnAddOrUpdate();
             });
 
             modelBuilder.Entity<FtsDocument>(entity =>
             {
-                entity.ToTable("fts_document");
-
-                entity.HasKey("rowid");
+                entity
+                    .ToTable("fts_document")
+                    .HasKey(x => x.RowId);
 
                 entity
                     .Property(x => x.RowId)
@@ -103,9 +103,9 @@ namespace SqliteFulltextSearch.Database
 
             modelBuilder.Entity<FtsSuggestion>(entity =>
             {
-                entity.ToTable("fts_suggestion");
-
-                entity.HasKey("rowid");
+                entity
+                    .ToTable("fts_suggestion")
+                    .HasKey(x => x.RowId);
 
                 entity
                     .Property(x => x.RowId)
@@ -118,7 +118,7 @@ namespace SqliteFulltextSearch.Database
                 entity
                     .HasOne(fts => fts.Suggestion)
                     .WithOne()
-                    .HasForeignKey<FtsDocument>(fts => fts.RowId);
+                    .HasForeignKey<FtsSuggestion>(fts => fts.RowId);
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -164,7 +164,7 @@ namespace SqliteFulltextSearch.Database
 
                 entity.Property(e => e.ValidTo)
                     .HasColumnType("text")
-                    .HasColumnName("valid_from")
+                    .HasColumnName("valid_to")
                     .IsRequired(false)
                     .ValueGeneratedOnAddOrUpdate();
             });
@@ -217,7 +217,7 @@ namespace SqliteFulltextSearch.Database
 
                 entity.Property(e => e.ValidTo)
                     .HasColumnType("text")
-                    .HasColumnName("valid_from")
+                    .HasColumnName("valid_to")
                     .IsRequired(false)
                     .ValueGeneratedOnAddOrUpdate();
 
@@ -267,7 +267,7 @@ namespace SqliteFulltextSearch.Database
 
                 entity.Property(e => e.ValidTo)
                     .HasColumnType("text")
-                    .HasColumnName("valid_from")
+                    .HasColumnName("valid_to")
                     .IsRequired(false)
                     .ValueGeneratedOnAddOrUpdate();
 
@@ -313,7 +313,7 @@ namespace SqliteFulltextSearch.Database
 
                 entity.Property(e => e.ValidTo)
                     .HasColumnType("text")
-                    .HasColumnName("valid_from")
+                    .HasColumnName("valid_to")
                     .IsRequired(false)
                     .ValueGeneratedOnAddOrUpdate();
 
@@ -363,7 +363,7 @@ namespace SqliteFulltextSearch.Database
 
                 entity.Property(e => e.ValidTo)
                     .HasColumnType("text")
-                    .HasColumnName("valid_from")
+                    .HasColumnName("valid_to")
                     .IsRequired(false)
                     .ValueGeneratedOnAddOrUpdate();
 

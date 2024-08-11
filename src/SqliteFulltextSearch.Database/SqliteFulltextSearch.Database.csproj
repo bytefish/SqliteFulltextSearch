@@ -7,8 +7,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.6" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.7" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Sql\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="..\..\sql\fts.sql" Link="Sql\fts.sql">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

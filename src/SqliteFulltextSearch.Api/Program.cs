@@ -17,6 +17,8 @@ using SqliteFulltextSearch.Api.Services;
 using SqliteFulltextSearch.Database;
 using SqliteFulltextSearch.Api.Endpoints;
 using Microsoft.Data.Sqlite;
+using SqliteFulltextSearch.Api.Hosting;
+using SqliteFulltextSearch.Database.Infrastructure;
 
 public partial class Program {
     private static async Task Main(string[] args)
@@ -56,8 +58,8 @@ public partial class Program {
             {
                 var connectionStringBuilder = new SqliteConnectionStringBuilder()
                 {
-                    DataSource = builder.Configuration.GetConnectionString("ApplicationDatabase"),
-                    Mode = SqliteOpenMode.ReadWrite,
+                    ConnectionString = builder.Configuration.GetConnectionString("ApplicationDatabase"),
+                    Mode = SqliteOpenMode.ReadWriteCreate,
                     Cache = SqliteCacheMode.Private
                 };
 
@@ -67,6 +69,9 @@ public partial class Program {
                     .EnableSensitiveDataLogging()
                     .UseSqlite(connectionString);
             });
+
+            // Add Hosted Services
+            builder.Services.AddHostedService<DatabaseMigrationBackgroundService>();
 
             // Authentication
             builder.Services.AddScoped<CurrentUser>();
@@ -108,6 +113,7 @@ public partial class Program {
             builder.Services.AddSingleton<DocumentService>();
             builder.Services.AddSingleton<PdfDocumentService>();
             builder.Services.AddSingleton<SqliteSearchService>();
+            builder.Services.AddSingleton<DatabaseManagement>();
 
             builder.Services.Configure<ApplicationOptions>(builder.Configuration.GetSection("Application"));
 
