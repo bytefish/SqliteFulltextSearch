@@ -16,21 +16,30 @@ namespace SqliteFulltextSearch.Api.Endpoints
         {
             app.MapPost("/delete-all-documents", DeleteAllAsync)
                 .WithName("DeleteAllDocuments")
+                .WithTags(Tags)
+                .WithOpenApi()
                 .AddEndpointFilter<ApplicationErrorExceptionFilter>();
 
 
             app.MapPost("/upload", UploadAsync)
                 .WithName("PostDocument")
-                .AddEndpointFilter<ApplicationErrorExceptionFilter>();
+                .WithTags(Tags)
+                .WithOpenApi()
+                .AddEndpointFilter<ApplicationErrorExceptionFilter>()
+                .DisableAntiforgery();
 
             app.MapGet("/suggest", SuggestAsync)
-                 .WithName("GetSuggestions")
-                 .AddEndpointFilter<ApplicationErrorExceptionFilter>();
+                .WithName("GetSuggestions")
+                .WithTags(Tags)
+                .WithOpenApi()
+                .AddEndpointFilter<ApplicationErrorExceptionFilter>();
 
 
             app.MapGet("/search", SearchAsync)
-                 .WithName("GetSearchResults")
-                 .AddEndpointFilter<ApplicationErrorExceptionFilter>();
+                .WithName("GetSearchResults")
+                .WithTags(Tags)
+                .WithOpenApi()
+                .AddEndpointFilter<ApplicationErrorExceptionFilter>();
 
             return app;
         }
@@ -145,18 +154,21 @@ namespace SqliteFulltextSearch.Api.Endpoints
         }
 
         public static async Task<IResult> UploadAsync(DocumentService documentService,
-                [FromForm(Name = "title")] string title,
-                [FromForm(Name = "suggestions")] List<string>? suggestions,
-                [FromForm(Name = "keywords")] List<string>? keywords,
-                [FromForm(Name = "data")] IFormFile data,
-                CancellationToken cancellationToken)
+            SqliteSearchService sqliteSearchService,
+            [FromForm(Name = "title")] string title,
+            [FromForm(Name = "suggestions")] List<string>? suggestions,
+            [FromForm(Name = "keywords")] List<string>? keywords,
+            [FromForm(Name = "data")] IFormFile data,
+            CancellationToken cancellationToken)
         {
             var fileBytes = await GetBytesAsync(data)
                 .ConfigureAwait(false);
 
-            await documentService
+            var document = await documentService
                 .CreateDocumentAsync(title, data.FileName, fileBytes, suggestions, keywords, Constants.Users.DataConversionUserId, cancellationToken)
                 .ConfigureAwait(false);
+
+            await sqliteSearchService.IndexDocumentAsync(document.Id, cancellationToken);
 
             return TypedResults.Created();
         }

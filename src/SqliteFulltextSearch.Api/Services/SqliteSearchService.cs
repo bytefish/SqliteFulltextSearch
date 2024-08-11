@@ -14,6 +14,7 @@ using SqliteFulltextSearch.Shared.Constants;
 using SqliteFulltextSearch.Shared.Models;
 using System.Diagnostics;
 using System.Text.Json;
+using SqliteFulltextSearch.Api.Infrastructure.Pdf;
 
 namespace SqliteFulltextSearch.Api.Services
 {
@@ -23,12 +24,13 @@ namespace SqliteFulltextSearch.Api.Services
 
         private readonly ApplicationOptions _options;
         private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory;
-
-        public SqliteSearchService(ILogger<SqliteSearchService> logger, IOptions<ApplicationOptions> options, IDbContextFactory<ApplicationDbContext> dbContextFactory)
+        private readonly PdfDocumentReader _pdfDocumentReader;
+        public SqliteSearchService(ILogger<SqliteSearchService> logger, IOptions<ApplicationOptions> options, IDbContextFactory<ApplicationDbContext> dbContextFactory, PdfDocumentReader pdfDocumentReader)
         {
             _logger = logger;
             _options = options.Value;
             _dbContextFactory = dbContextFactory;
+            _pdfDocumentReader = pdfDocumentReader;
         }
 
         public async Task DeleteAllAsync(CancellationToken cancellationToken)
@@ -59,20 +61,23 @@ namespace SqliteFulltextSearch.Api.Services
                 };
             }
 
-            // Load the Keywords for the Document
-            var keywords = await GetKeywordsByDocumentId(context, documentId, cancellationToken)
+            // Get the PDF Metadata:
+            var metadata = _pdfDocumentReader.ExtractMetadata(document);
+            
+            // Create the Search Document
+            var ftsDocument = new FtsDocument
+            {
+                RowId = documentId,
+                Content = metadata.Content ?? string.Empty,
+                Title = document.Title,
+            };
+
+            await context.FtsDocuments
+                .AddAsync(ftsDocument, cancellationToken)
                 .ConfigureAwait(false);
 
-            // Load the Suggestions for the Document
-            var suggestions = await GetSuggestionsByDocumentId(context, documentId, cancellationToken)
-                .ConfigureAwait(false);
-
-            // Index the document ...
-
-            // Update the IndexedAt Timestamp
-            await context.Documents
-                .Where(x => x.Id == documentId)
-                .ExecuteUpdateAsync(s => s.SetProperty(p => p.IndexedAt, DateTime.UtcNow), cancellationToken)
+            await context
+                .SaveChangesAsync(cancellationToken)
                 .ConfigureAwait(false);
         }
 

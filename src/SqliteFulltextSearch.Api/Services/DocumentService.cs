@@ -26,7 +26,7 @@ namespace SqliteFulltextSearch.Api.Services
             _fileExtensionContentTypeProvider = new FileExtensionContentTypeProvider();
         }
 
-        public async Task CreateDocumentAsync(string title, string filename, byte[] data, List<string>? suggestions, List<string>? keywords, int lastEditedBy, CancellationToken cancellationToken)
+        public async Task<Document> CreateDocumentAsync(string title, string filename, byte[] data, List<string>? suggestions, List<string>? keywords, int lastEditedBy, CancellationToken cancellationToken)
         {
             using var context = await _dbContextFactory
                 .CreateDbContextAsync(cancellationToken)
@@ -145,6 +145,8 @@ namespace SqliteFulltextSearch.Api.Services
                 await transaction
                     .CommitAsync(cancellationToken)
                     .ConfigureAwait(false);
+
+                return document;
             }
         }
 

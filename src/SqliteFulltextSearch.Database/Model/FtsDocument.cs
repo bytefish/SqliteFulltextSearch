@@ -19,18 +19,8 @@ namespace SqliteFulltextSearch.Database.Model
         public required string Content { get; set; }
 
         /// <summary>
-        /// Gets or sets the Match (Hidden FTS5 Column).
-        /// </summary>
-        public string? Match { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Rank (Hidden FTS5 Column).
-        /// </summary>
-        public double? Rank { get; set; }
-
-        /// <summary>
         /// Gets or sets the Document.
         /// </summary>
-        public Document Document { get; set; } = null!;
+        public Document? Document { get; set; } = null!;
     }
 }

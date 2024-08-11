@@ -4,7 +4,6 @@ using SqliteFulltextSearch.Web.Client.Infrastructure;
 using SqliteFulltextSearch.Shared.Constants;
 using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace SqliteFulltextSearch.Web.Client.Pages

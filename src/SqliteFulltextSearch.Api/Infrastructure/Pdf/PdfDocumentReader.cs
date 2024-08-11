@@ -1,22 +1,26 @@
-﻿using UglyToad.PdfPig.Content;
-using UglyToad.PdfPig;
+﻿using SqliteFulltextSearch.Api.Models;
 using SqliteFulltextSearch.Database.Model;
+using SqliteFulltextSearch.Shared.Infrastructure;
 using System.Text;
-using SqliteFulltextSearch.Api.Models;
+using UglyToad.PdfPig;
+using UglyToad.PdfPig.Content;
+using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
 
-namespace SqliteFulltextSearch.Api.Services
+namespace SqliteFulltextSearch.Api.Infrastructure.Pdf
 {
-    public class PdfDocumentService
+    public class PdfDocumentReader
     {
-        private readonly ILogger<PdfDocumentService> _logger;
+        private readonly ILogger<PdfDocumentReader> _logger;
 
-        public PdfDocumentService(ILogger<PdfDocumentService> logger)
+        public PdfDocumentReader(ILogger<PdfDocumentReader> logger)
         {
             _logger = logger;
         }
 
         public DocumentMetadata ExtractMetadata(Document document)
         {
+            _logger.TraceMethodEntry();
+
             // Read as PDF Document
             using PdfDocument pdfDocument = PdfDocument.Open(document.Data);
 
@@ -39,12 +43,14 @@ namespace SqliteFulltextSearch.Api.Services
 
             foreach (Page page in pdfDocument.GetPages())
             {
-                string pageText = page.Text;
+                var text = ContentOrderTextExtractor.GetText(page);
 
-                stringBuilder.AppendLine(pageText);
+                stringBuilder.AppendLine(text);
             }
 
             return stringBuilder.ToString();
+
         }
+
     }
 }

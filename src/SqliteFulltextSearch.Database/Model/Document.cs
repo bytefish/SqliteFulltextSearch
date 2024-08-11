@@ -18,15 +18,5 @@ namespace SqliteFulltextSearch.Database.Model
         /// Gets or sets the data.
         /// </summary>
         public required byte[] Data { get; set; }
-
-        /// <summary>
-        /// Gets or sets the upload date.
-        /// </summary>
-        public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
-
-        /// <summary>
-        /// Gets or sets the index date.
-        /// </summary>
-        public DateTime? IndexedAt { get; set; } = null;
     }
 }

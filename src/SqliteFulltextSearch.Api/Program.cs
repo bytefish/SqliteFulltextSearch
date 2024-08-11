@@ -19,6 +19,7 @@ using SqliteFulltextSearch.Api.Endpoints;
 using Microsoft.Data.Sqlite;
 using SqliteFulltextSearch.Api.Hosting;
 using SqliteFulltextSearch.Database.Infrastructure;
+using SqliteFulltextSearch.Api.Infrastructure.Pdf;
 
 public partial class Program {
     private static async Task Main(string[] args)
@@ -108,21 +109,16 @@ public partial class Program {
 
             builder.Services.AddSingleton<ExceptionToErrorMapper>();
 
+            // Infrastructure
+            builder.Services.AddSingleton<PdfDocumentReader>();
+
             // Application Services
             builder.Services.AddSingleton<UserService>();
             builder.Services.AddSingleton<DocumentService>();
-            builder.Services.AddSingleton<PdfDocumentService>();
             builder.Services.AddSingleton<SqliteSearchService>();
             builder.Services.AddSingleton<DatabaseManagement>();
 
             builder.Services.Configure<ApplicationOptions>(builder.Configuration.GetSection("Application"));
-
-            // Route Constraints
-            // ...
-
-            // Controllers
-            builder.Services
-                .AddControllers();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
