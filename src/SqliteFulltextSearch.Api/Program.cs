@@ -150,6 +150,8 @@ public partial class Program {
                     };
                 });
 
+            builder.Services.AddAntiforgery();
+
             // Add Policies
             builder.Services.AddAuthorization(options =>
             {

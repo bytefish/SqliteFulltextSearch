@@ -152,7 +152,7 @@ namespace SqliteFulltextSearch.Web.Client.Pages
         }
 
         /// <summary>
-        /// Validates a <see cref="GitRepositoryMetadataDto"/>.
+        /// Validates a <see cref="UploadModel"/>.
         /// </summary>
         /// <param name="repository">Item to validate</param>
         /// <returns>The list of validation errors for the EditContext model fields</returns>
