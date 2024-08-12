@@ -38,7 +38,7 @@ namespace SqliteFulltextSearch.Api.Infrastructure.DocumentProcessing.Readers
                 encoding = Encoding.UTF8;
             }
 
-            var content = detectionResult.Detected.Encoding.GetString(document.Data);
+            var content = encoding.GetString(document.Data);
             
             return new DocumentMetadata
             {
