@@ -18,7 +18,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./docker/search/search-data:/search-data
+      - ./docker/search-api/search-data:/search-data
       - ~/.aspnet/https:/https:ro      
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
   search-web:

@@ -18,7 +18,7 @@ namespace SqliteFulltextSearch.Database.Infrastructure
         {
             using var applicationDbContext = _dbContextFactory.CreateDbContext();
 
-            var file = Path.Combine(AppContext.BaseDirectory, "sql/fts.sql");
+            var file = Path.Combine(AppContext.BaseDirectory, "Sql/fts.sql");
 
             var sql = File.ReadAllText(file);
 

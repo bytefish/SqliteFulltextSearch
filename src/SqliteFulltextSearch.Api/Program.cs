@@ -23,7 +23,8 @@ using SqliteFulltextSearch.Api.Infrastructure.DocumentProcessing.Readers;
 using SqliteFulltextSearch.Api.Infrastructure.DocumentProcessing.Processors;
 using SqliteFulltextSearch.Api.Infrastructure.DocumentProcessing;
 
-public partial class Program {
+public partial class Program
+{
     private static async Task Main(string[] args)
     {
         // We will log to %LocalAppData%/GitClub to store the Logs, so it doesn't need to be configured 
@@ -51,7 +52,10 @@ public partial class Program {
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Configuration
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables()
+                .AddUserSecrets<Program>();
 
             // Logging
             builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
@@ -202,7 +206,7 @@ public partial class Program {
             });
 
             var app = builder.Build();
-            
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
