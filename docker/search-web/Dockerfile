@@ -2,9 +2,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /source
 
-# Copy SQL Files
-COPY ../sql ./sql
-
 # COPY Project Files
 COPY ../src/SqliteFulltextSearch.Web.Client/*.csproj ./SqliteFulltextSearch.Web.Client/
 COPY ../src/SqliteFulltextSearch.Web.Server/*.csproj ./SqliteFulltextSearch.Web.Server/
