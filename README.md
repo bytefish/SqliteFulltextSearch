@@ -1,4 +1,4 @@
-# Elasticsearch Fulltext Search Example #
+# SQLite Fulltext Search Example #
 
 This repository implements a Fulltext Search Engine using SQLite FTS5 Tables. You can use it to index documents, 
 such as PDF files. It comes with a Blazor Frontend built upon the FluentUI Component library. 
