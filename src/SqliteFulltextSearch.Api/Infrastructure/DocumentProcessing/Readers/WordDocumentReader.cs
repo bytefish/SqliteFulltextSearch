@@ -7,7 +7,7 @@ using SqliteFulltextSearch.Shared.Infrastructure;
 using System.Globalization;
 using System.Text;
 
-namespace SqliteFulltextSearch.Api.Infrastructure.Word
+namespace SqliteFulltextSearch.Api.Infrastructure.DocumentProcessing.Readers
 {
     public class WordDocumentReader
     {
@@ -24,11 +24,11 @@ namespace SqliteFulltextSearch.Api.Infrastructure.Word
 
             using (var ms = new MemoryStream(document.Data))
             {
-                using(var wpd = WordprocessingDocument.Open(ms, true)) 
+                using (var wpd = WordprocessingDocument.Open(ms, true))
                 {
                     var element = wpd.MainDocumentPart?.Document.Body;
 
-                    if(element == null)
+                    if (element == null)
                     {
                         return new DocumentMetadata();
                     }
@@ -51,13 +51,13 @@ namespace SqliteFulltextSearch.Api.Infrastructure.Word
         public string GetAsPlainText(OpenXmlElement element)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            
-            foreach(var section in element.Elements())
+
+            foreach (var section in element.Elements())
             {
-                switch(section.LocalName)
+                switch (section.LocalName)
                 {
                     case "t":
-                        stringBuilder.Append(section.InnerText); 
+                        stringBuilder.Append(section.InnerText);
                         break;
                     case "cr":
                     case "br":

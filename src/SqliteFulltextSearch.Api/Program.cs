@@ -19,9 +19,9 @@ using SqliteFulltextSearch.Api.Endpoints;
 using Microsoft.Data.Sqlite;
 using SqliteFulltextSearch.Api.Hosting;
 using SqliteFulltextSearch.Database.Infrastructure;
-using SqliteFulltextSearch.Api.Infrastructure.Pdf;
-using SqliteFulltextSearch.Api.Infrastructure.Word;
-using SqliteFulltextSearch.Api.Infrastructure.Processor;
+using SqliteFulltextSearch.Api.Infrastructure.DocumentProcessing.Readers;
+using SqliteFulltextSearch.Api.Infrastructure.DocumentProcessing.Processors;
+using SqliteFulltextSearch.Api.Infrastructure.DocumentProcessing;
 
 public partial class Program {
     private static async Task Main(string[] args)

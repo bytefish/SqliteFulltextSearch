@@ -5,11 +5,9 @@ using SqliteFulltextSearch.Api.Infrastructure.Exceptions;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-
-using SqliteFulltextSearch.Shared.Infrastructure;
 using SqliteFulltextSearch.Database;
 using SqliteFulltextSearch.Database.Model;
-using SqliteFulltextSearch.Api.Infrastructure.Processor;
+using SqliteFulltextSearch.Api.Infrastructure.DocumentProcessing;
 
 namespace SqliteFulltextSearch.Api.Services
 {
@@ -164,6 +162,78 @@ namespace SqliteFulltextSearch.Api.Services
                     .ConfigureAwait(false);
 
                 return document;
+            }
+        }
+
+        public async Task DeleteAllDocumentsAsync(CancellationToken cancellationToken)
+        {
+            using var context = await _dbContextFactory
+                .CreateDbContextAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            using (var transaction = await context.Database
+                .BeginTransactionAsync(cancellationToken)
+                .ConfigureAwait(false))
+            {
+                await context.DocumentKeywords
+                    .ExecuteDeleteAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
+                await context.DocumentSuggestions
+                    .ExecuteDeleteAsync(cancellationToken)
+                    .ConfigureAwait(false);
+                
+                await context.Documents
+                    .ExecuteDeleteAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
+                await context.FtsDocuments
+                    .ExecuteDeleteAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
+                await context.FtsSuggestions
+                    .ExecuteDeleteAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
+                await transaction
+                    .CommitAsync(cancellationToken)
+                    .ConfigureAwait(false);
+            }
+        }
+
+        public async Task DeleteDocumentByIdAsync(int documentId, CancellationToken cancellationToken)
+        {
+            using var context = await _dbContextFactory
+                .CreateDbContextAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            using (var transaction = await context.Database
+                .BeginTransactionAsync(cancellationToken)
+                .ConfigureAwait(false))
+            {
+                await context.DocumentKeywords
+                    .Where(x => x.Id == documentId)
+                    .ExecuteDeleteAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
+                await context.DocumentSuggestions
+                    .Where(x => x.Id == documentId)
+                    .ExecuteDeleteAsync(cancellationToken)
+                    .ConfigureAwait(false);
+                
+                await context.Documents
+                    .Where(x => x.Id == documentId)
+                    .ExecuteDeleteAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
+                await context.FtsDocuments
+                    .Where(x => x.RowId == documentId)
+                    .ExecuteDeleteAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
+                await transaction
+                    .CommitAsync(cancellationToken)
+                    .ConfigureAwait(false);
             }
         }
 

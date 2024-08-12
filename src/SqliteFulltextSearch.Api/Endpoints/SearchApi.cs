@@ -45,10 +45,10 @@ namespace SqliteFulltextSearch.Api.Endpoints
             return app;
         }
 
-        public static async Task<IResult> DeleteAllAsync(SqliteSearchService sqliteSearchService, CancellationToken cancellationToken)
+        public static async Task<IResult> DeleteAllAsync(DocumentService documentService, CancellationToken cancellationToken)
         {
-            await sqliteSearchService
-                .DeleteAllAsync(cancellationToken)
+            await documentService
+                .DeleteAllDocumentsAsync(cancellationToken)
                 .ConfigureAwait(false);
 
             return TypedResults.Ok();
@@ -103,8 +103,6 @@ namespace SqliteFulltextSearch.Api.Endpoints
             var document = await documentService
                 .CreateDocumentAsync(upload.Title, upload.Data.FileName, fileBytes, upload.Suggestions, upload.Keywords, Constants.Users.DataConversionUserId, cancellationToken)
                 .ConfigureAwait(false);
-
-            await sqliteSearchService.IndexDocumentAsync(document.Id, cancellationToken);
 
             return TypedResults.Created();
         }

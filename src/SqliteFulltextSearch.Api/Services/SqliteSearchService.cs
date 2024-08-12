@@ -1,4 +1,4 @@
-﻿ // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Elastic.Clients.Elasticsearch;
 using SqliteFulltextSearch.Api.Configuration;
@@ -14,7 +14,7 @@ using SqliteFulltextSearch.Shared.Constants;
 using SqliteFulltextSearch.Shared.Models;
 using System.Diagnostics;
 using System.Text.Json;
-using SqliteFulltextSearch.Api.Infrastructure.Pdf;
+using SqliteFulltextSearch.Api.Infrastructure.DocumentProcessing.Readers;
 
 namespace SqliteFulltextSearch.Api.Services
 {
@@ -24,61 +24,12 @@ namespace SqliteFulltextSearch.Api.Services
 
         private readonly ApplicationOptions _options;
         private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory;
-        private readonly PdfDocumentReader _pdfDocumentReader;
-        public SqliteSearchService(ILogger<SqliteSearchService> logger, IOptions<ApplicationOptions> options, IDbContextFactory<ApplicationDbContext> dbContextFactory, PdfDocumentReader pdfDocumentReader)
+
+        public SqliteSearchService(ILogger<SqliteSearchService> logger, IOptions<ApplicationOptions> options, IDbContextFactory<ApplicationDbContext> dbContextFactory)
         {
             _logger = logger;
             _options = options.Value;
             _dbContextFactory = dbContextFactory;
-            _pdfDocumentReader = pdfDocumentReader;
-        }
-
-        public async Task DeleteAllAsync(CancellationToken cancellationToken)
-        {
-            _logger.TraceMethodEntry();
-
-
-        }
-
-        public async Task IndexDocumentAsync(int documentId, CancellationToken cancellationToken)
-        {
-            _logger.TraceMethodEntry();
-
-            using var context = await _dbContextFactory
-                .CreateDbContextAsync(cancellationToken)
-                .ConfigureAwait(false);
-
-            var document = await context.Documents
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == documentId, cancellationToken);
-
-            if (document == null)
-            {
-                throw new EntityNotFoundException
-                {
-                    EntityName = nameof(Document),
-                    EntityId = documentId,
-                };
-            }
-
-            // Get the PDF Metadata:
-            var metadata = _pdfDocumentReader.ExtractMetadata(document);
-            
-            // Create the Search Document
-            var ftsDocument = new FtsDocument
-            {
-                RowId = documentId,
-                Content = metadata.Content ?? string.Empty,
-                Title = document.Title,
-            };
-
-            await context.FtsDocuments
-                .AddAsync(ftsDocument, cancellationToken)
-                .ConfigureAwait(false);
-
-            await context
-                .SaveChangesAsync(cancellationToken)
-                .ConfigureAwait(false);
         }
 
         /// <summary>

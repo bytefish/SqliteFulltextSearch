@@ -6,7 +6,7 @@ using UglyToad.PdfPig;
 using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
 
-namespace SqliteFulltextSearch.Api.Infrastructure.Pdf
+namespace SqliteFulltextSearch.Api.Infrastructure.DocumentProcessing.Readers
 {
     public class PdfDocumentReader
     {

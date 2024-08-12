@@ -32,4 +32,10 @@
       <ProjectReference Include="..\SqliteFulltextSearch.Shared\SqliteFulltextSearch.Shared.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Infrastructure\Pdf\" />
+      <Folder Include="Infrastructure\Processor\" />
+      <Folder Include="Infrastructure\Word\" />
+    </ItemGroup>
+
 </Project>

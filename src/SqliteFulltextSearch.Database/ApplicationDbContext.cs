@@ -15,6 +15,8 @@ namespace SqliteFulltextSearch.Database
         public DbSet<Document> Documents { get; set; }
 
         public DbSet<FtsDocument> FtsDocuments { get; set; }
+        
+        public DbSet<FtsSuggestion> FtsSuggestions { get; set; }
 
         public DbSet<Suggestion> Suggestions { get; set; }
 
