@@ -1,6 +1,7 @@
-﻿using DocumentFormat.OpenXml;
+﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using Microsoft.AspNetCore.Mvc.Formatters.Xml;
 using SqliteFulltextSearch.Api.Models;
 using SqliteFulltextSearch.Database.Model;
 using SqliteFulltextSearch.Shared.Infrastructure;
@@ -9,6 +10,9 @@ using System.Text;
 
 namespace SqliteFulltextSearch.Api.Infrastructure.DocumentProcessing.Readers
 {
+    /// <summary>
+    /// Reads a Word Document and its metadata.
+    /// </summary>
     public class WordDocumentReader
     {
         private readonly ILogger<WordDocumentReader> _logger;
@@ -18,6 +22,11 @@ namespace SqliteFulltextSearch.Api.Infrastructure.DocumentProcessing.Readers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Extracts the Metadata from a Word Document.
+        /// </summary>
+        /// <param name="document">Document with the data</param>
+        /// <returns>Metadata of the document</returns>
         public DocumentMetadata ExtractMetadata(Document document)
         {
             _logger.TraceMethodEntry();

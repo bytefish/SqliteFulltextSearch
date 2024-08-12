@@ -116,6 +116,7 @@ public partial class Program {
             // Infrastructure (Document Readers)
             builder.Services.AddSingleton<PdfDocumentReader>();
             builder.Services.AddSingleton<WordDocumentReader>();
+            builder.Services.AddSingleton<TextDocumentReader>();
 
             // Infrastructure (Document Processors)
             builder.Services.AddSingleton<IDocumentProcessor, PdfDocumentProcessor>();

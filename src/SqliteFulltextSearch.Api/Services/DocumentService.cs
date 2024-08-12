@@ -80,6 +80,20 @@ namespace SqliteFulltextSearch.Api.Services
                             await context
                                 .SaveChangesAsync(cancellationToken)
                                 .ConfigureAwait(false);
+
+                            var ftsSuggestion = new FtsSuggestion
+                            {
+                                RowId = suggestion.Id,
+                                Name = s,
+                            };
+
+                            await context
+                                .AddAsync(ftsSuggestion, cancellationToken)
+                                .ConfigureAwait(false);
+
+                            await context
+                                .SaveChangesAsync(cancellationToken)
+                                .ConfigureAwait(false);
                         }
 
                         var documentSuggestion = new DocumentSuggestion
@@ -156,7 +170,6 @@ namespace SqliteFulltextSearch.Api.Services
                     .SaveChangesAsync(cancellationToken)
                     .ConfigureAwait(false);
 
-                // Commit the Transaction
                 await transaction
                     .CommitAsync(cancellationToken)
                     .ConfigureAwait(false);

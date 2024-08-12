@@ -35,8 +35,13 @@ namespace SqliteFulltextSearch.Api.Endpoints
                 .WithOpenApi()
                 .AddEndpointFilter<ApplicationErrorExceptionFilter>();
 
-
             app.MapGet("/search", SearchAsync)
+                .WithName("GetSearchResults")
+                .WithTags(Tags)
+                .WithOpenApi()
+                .AddEndpointFilter<ApplicationErrorExceptionFilter>();
+            
+            app.MapGet("/download/{documentId}", DownloadFileAsync)
                 .WithName("GetSearchResults")
                 .WithTags(Tags)
                 .WithOpenApi()
@@ -52,6 +57,15 @@ namespace SqliteFulltextSearch.Api.Endpoints
                 .ConfigureAwait(false);
 
             return TypedResults.Ok();
+        }
+
+        public static async Task<IResult> DownloadFileAsync(DocumentService documentService, [FromRoute(Name = "documentId")] int documentId, CancellationToken cancellationToken)
+        {
+            var fileInformation = await documentService
+                .GetFileInformationByDocumentIdAsync(documentId, cancellationToken)
+                .ConfigureAwait(false);
+
+            return Results.File(fileContents: fileInformation.Data, contentType: fileInformation.ContentType, fileDownloadName: fileInformation.Filename);
         }
 
         public static async Task<IResult> SearchAsync(SqliteSearchService sqliteSearchService,

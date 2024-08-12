@@ -1,4 +1,6 @@
-﻿using SqliteFulltextSearch.Api.Models;
+﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using SqliteFulltextSearch.Api.Models;
 using SqliteFulltextSearch.Database.Model;
 using SqliteFulltextSearch.Shared.Infrastructure;
 using System.Text;
@@ -8,6 +10,9 @@ using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
 
 namespace SqliteFulltextSearch.Api.Infrastructure.DocumentProcessing.Readers
 {
+    /// <summary>
+    /// Reads a PDF document and its metadata.
+    /// </summary>
     public class PdfDocumentReader
     {
         private readonly ILogger<PdfDocumentReader> _logger;
@@ -17,6 +22,11 @@ namespace SqliteFulltextSearch.Api.Infrastructure.DocumentProcessing.Readers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Extracts the Metadata from a PDF Document.
+        /// </summary>
+        /// <param name="document">Document with the data</param>
+        /// <returns>Metadata of the document</returns>
         public DocumentMetadata ExtractMetadata(Document document)
         {
             _logger.TraceMethodEntry();

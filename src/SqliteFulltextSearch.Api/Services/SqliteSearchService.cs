@@ -403,7 +403,7 @@ namespace SqliteFulltextSearch.Api.Services
                     Matches = [
                         document.Match.Content
                     ],
-                    Url = $"{_options.BaseUri}/raw/{document.Id}"
+                    Url = $"{_options.BaseUri}/download/{document.Id}"
                 };
 
                 searchResults.Add(searchResult);
