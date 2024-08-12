@@ -30,62 +30,6 @@ namespace SqliteFulltextSearch.Api.Services
         }
 
         /// <summary>
-        /// Loads the Suggestions for a Document given a Document ID.
-        /// </summary>
-        /// <param name="context">DbContext to read from</param>
-        /// <param name="documentId">Document ID</param>
-        /// <param name="cancellationToken">Cancellation Token</param>
-        /// <returns>List of Suggestions associated with a Document</returns>
-        private async Task<List<Suggestion>> GetSuggestionsByDocumentId(ApplicationDbContext context, int documentId, CancellationToken cancellationToken)
-        {
-            _logger.TraceMethodEntry();
-
-            // Join Documents, DocumentSuggestions and Suggestions
-            var suggestionQueryable = from document in context.Documents
-                                      join documentSuggestion in context.DocumentSuggestions
-                                          on document.Id equals documentSuggestion.DocumentId
-                                      join suggestion in context.Suggestions
-                                          on documentSuggestion.SuggestionId equals suggestion.Id
-                                      where
-                                        document.Id == documentId
-                                      select suggestion;
-
-            List<Suggestion> suggestions = await suggestionQueryable.AsNoTracking()
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
-
-            return suggestions;
-        }
-
-        /// <summary>
-        /// Loads the Keywords associated with a given Document.
-        /// </summary>
-        /// <param name="context">DbContext to use</param>
-        /// <param name="documentId">Document ID</param>
-        /// <param name="cancellationToken">Cancellation Token</param>
-        /// <returns>List of Keywords associated with a given Document</returns>
-        private async Task<List<Keyword>> GetKeywordsByDocumentId(ApplicationDbContext context, int documentId, CancellationToken cancellationToken)
-        {
-            _logger.TraceMethodEntry();
-
-            // Join Documents, DocumentKeywords and Keywords
-            var keywordQueryable = from document in context.Documents
-                                   join documentKeyword in context.DocumentKeywords
-                                       on document.Id equals documentKeyword.DocumentId
-                                   join keyword in context.Keywords
-                                       on documentKeyword.KeywordId equals keyword.Id
-                                   where
-                                     document.Id == documentId
-                                   select keyword;
-
-            List<Keyword> keywords = await keywordQueryable.AsNoTracking()
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
-
-            return keywords;
-        }
-
-        /// <summary>
         /// Searches the Database for a Document.
         /// </summary>
         /// <param name="query">Query Text</param>
@@ -150,7 +94,7 @@ namespace SqliteFulltextSearch.Api.Services
                             'title', documents_cte.match_title, 
                             'content', documents_cte.match_content)
                     )
-                )
+                ) value
                 FROM documents_cte
                     INNER JOIN document document ON documents_cte.document_id = document.document_id";
 
@@ -191,7 +135,7 @@ namespace SqliteFulltextSearch.Api.Services
 
             var matches = JsonSerializer.Deserialize<List<DocumentSearchDto>>(json);
 
-            if(matches == null)
+            if (matches == null)
             {
                 return new SearchResults
                 {
@@ -236,7 +180,7 @@ namespace SqliteFulltextSearch.Api.Services
                 WITH suggestions_cte AS 
                 (
                     SELECT s.rowid suggestion_id, 
-                        highlight(s.fts_suggestion, 0, 'match→', '←match') match_suggestion
+                        highlight(s.fts_suggestion, 0, @highlightStartTag, @highlightEndTag) match_suggestion
                     FROM 
                         fts_suggestion s
                     WHERE 
@@ -253,14 +197,17 @@ namespace SqliteFulltextSearch.Api.Services
                         'valid_from', suggestion.valid_from,
                         'valid_to', suggestion.valid_to
                     )
-                )
+                )  value
                 FROM suggestions_cte
-                    INNER JOIN suggestion suggestion ON suggestions_cte.suggestion_id = suggestion.suggestion_id";
+                    INNER JOIN suggestion ON suggestions_cte.suggestion_id = suggestion.suggestion_id";
 
             // Set the Query as a Parameter to avoid SQL Injections
             var parameters = new[]
             {
-                new SqliteParameter("@query", $"{{suggestion}}: {query}"),
+                new SqliteParameter("@query", $"{{name}}: {query}"),
+                new SqliteParameter("@highlightStartTag", SqliteConstants.Highlighter.HighlightStartTag),
+                new SqliteParameter("@highlightEndTag", SqliteConstants.Highlighter.HighlightEndTag),
+
             };
 
             // Let's measure how long it took...
@@ -335,9 +282,9 @@ namespace SqliteFulltextSearch.Api.Services
 
             foreach (var suggestion in suggestions)
             {
-                result.Add(new SearchSuggestion 
-                { 
-                    Text = suggestion.Name, 
+                result.Add(new SearchSuggestion
+                {
+                    Text = suggestion.Name,
                     Highlight = suggestion.Highlight
                 });
             }
