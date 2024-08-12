@@ -2,70 +2,6 @@ networks:
   services:
 
 services:
-  postgres:
-    image: postgres:16
-    container_name: postgres
-    networks:
-      - services
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-    volumes:
-      - ./docker/postgres/postgres.conf:/usr/local/etc/postgres/postgres.conf
-      - ./sql/fts.sql:/docker-entrypoint-initdb.d/1-fts.sql
-      - ./sql/fts-versioning.sql:/docker-entrypoint-initdb.d/2-fts-versioning.sql
-      - ./sql/fts-replication.sql:/docker-entrypoint-initdb.d/3-fts-replication.sql
-      - ./sql/fts-tests.sql:/docker-entrypoint-initdb.d/4-fts-tests.sql
-      - ./sql/fts-data.sql:/docker-entrypoint-initdb.d/5-fts-data.sql
-    command: "postgres -c config_file=/usr/local/etc/postgres/postgres.conf"
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    profiles:  ["postgres", "dev"]
-  
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION:-8.14.1}
-    container_name: ${ELASTIC_HOSTNAME:-es01}
-    hostname: ${ELASTIC_HOSTNAME:-es01}
-    restart: ${RESTART_MODE:-unless-stopped}
-    healthcheck:
-      test: ["CMD-SHELL", "curl --user ${ELASTIC_USER:-elastic}:${ELASTIC_PASSWORD:-secret} --silent --fail https://localhost:9200/_cluster/health -k || exit 1" ]
-      interval: 10s
-      timeout: 10s
-      retries: 20
-      start_period: 30s
-    profiles:  ["elastic", "dev"]
-    env_file:
-      - ./docker/.env
-    environment:
-      - node.name=es01
-      - discovery.type=single-node
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD:-secret}
-      - xpack.security.enabled=${ELASTIC_SECURITY:-true}
-      - xpack.security.http.ssl.enabled=true
-      - xpack.security.http.ssl.verification_mode=none
-      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/cert/es01.key
-      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/cert/es01.crt
-      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/cert/ca/ca.crt
-      - xpack.security.transport.ssl.enabled=${ELASTIC_SECURITY:-true}
-      - xpack.security.transport.ssl.verification_mode=none
-      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/cert/ca/ca.crt
-      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/cert/es01.crt
-      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/cert/es01.key
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - ./docker/elasticsearch/elastic-data2:/usr/share/elasticsearch/data
-      - ./docker/elasticsearch/elastic-cert:/usr/share/elasticsearch/config/cert
-    ports:
-      - "9200:9200"
-      - "9300:9300"
   search-api:
     container_name: search-api
     build:
@@ -79,9 +15,6 @@ services:
     profiles:  ["api", "dev"]
     env_file:
       - ./docker/.env
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
     ports:
       - "5000:5000"
     volumes:
@@ -101,9 +34,6 @@ services:
     profiles:  ["web", "dev"]
     env_file:
       - ./docker/.env
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
     ports:
       - "5001:5001"
     volumes:

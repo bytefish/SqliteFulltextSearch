@@ -2,20 +2,23 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /source
 
-# COPY Project Files:
-COPY ../src/ElasticsearchFulltextExample.Web.Client/*.csproj ./ElasticsearchFulltextExample.Web.Client/
-COPY ../src/ElasticsearchFulltextExample.Web.Server/*.csproj ./ElasticsearchFulltextExample.Web.Server/
-COPY ../src/ElasticsearchFulltextExample.Shared/*.csproj ./ElasticsearchFulltextExample.Shared/
+# Copy SQL Files
+COPY ../sql ./sql
+
+# COPY Project Files
+COPY ../src/SqliteFulltextSearch.Web.Client/*.csproj ./SqliteFulltextSearch.Web.Client/
+COPY ../src/SqliteFulltextSearch.Web.Server/*.csproj ./SqliteFulltextSearch.Web.Server/
+COPY ../src/SqliteFulltextSearch.Shared/*.csproj ./SqliteFulltextSearch.Shared/
 
 # And restore the NuGet Packages:
-RUN dotnet restore "ElasticsearchFulltextExample.Web.Server/ElasticsearchFulltextExample.Web.Server.csproj"
+RUN dotnet restore "SqliteFulltextSearch.Web.Server/SqliteFulltextSearch.Web.Server.csproj"
 
-# COPY 
-COPY ../src/ElasticsearchFulltextExample.Web.Client/. ./src/ElasticsearchFulltextExample.Web.Client/
-COPY ../src/ElasticsearchFulltextExample.Web.Server/. ./src/ElasticsearchFulltextExample.Web.Server/
-COPY ../src/ElasticsearchFulltextExample.Shared/. ./src/ElasticsearchFulltextExample.Shared/
+# COPY Projects
+COPY ../src/SqliteFulltextSearch.Web.Client/. ./src/SqliteFulltextSearch.Web.Client/
+COPY ../src/SqliteFulltextSearch.Web.Server/. ./src/SqliteFulltextSearch.Web.Server/
+COPY ../src/SqliteFulltextSearch.Shared/. ./src/SqliteFulltextSearch.Shared/
 
-RUN dotnet publish ./src/ElasticsearchFulltextExample.Web.Server/ElasticsearchFulltextExample.Web.Server.csproj -c Release -o /app
+RUN dotnet publish ./src/SqliteFulltextSearch.Web.Server/SqliteFulltextSearch.Web.Server.csproj -c Release -o /app
 
 # Build the final image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
@@ -25,4 +28,4 @@ WORKDIR /app
 COPY --from=build /app ./
 
 # Start the Kestrel Server:
-ENTRYPOINT ["dotnet", "ElasticsearchFulltextExample.Web.Server.dll"]
+ENTRYPOINT ["dotnet", "SqliteFulltextSearch.Web.Server.dll"]
