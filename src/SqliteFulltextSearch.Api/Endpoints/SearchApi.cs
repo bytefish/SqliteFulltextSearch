@@ -42,7 +42,7 @@ namespace SqliteFulltextSearch.Api.Endpoints
                 .AddEndpointFilter<ApplicationErrorExceptionFilter>();
             
             app.MapGet("/download/{documentId}", DownloadFileAsync)
-                .WithName("GetSearchResults")
+                .WithName("DownloadFile")
                 .WithTags(Tags)
                 .WithOpenApi()
                 .AddEndpointFilter<ApplicationErrorExceptionFilter>();

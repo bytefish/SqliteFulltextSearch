@@ -1,8 +1,6 @@
 ﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Elastic.Clients.Elasticsearch;
 using SqliteFulltextSearch.Api.Configuration;
-using SqliteFulltextSearch.Api.Infrastructure.Exceptions;
 using SqliteFulltextSearch.Api.Models;
 using SqliteFulltextSearch.Shared.Infrastructure;
 using Microsoft.Data.Sqlite;
@@ -14,7 +12,6 @@ using SqliteFulltextSearch.Shared.Constants;
 using SqliteFulltextSearch.Shared.Models;
 using System.Diagnostics;
 using System.Text.Json;
-using SqliteFulltextSearch.Api.Infrastructure.DocumentProcessing.Readers;
 
 namespace SqliteFulltextSearch.Api.Services
 {
@@ -346,23 +343,6 @@ namespace SqliteFulltextSearch.Api.Services
             }
 
             return result;
-        }
-
-        /// <summary>
-        /// Replaces a string at a given index.
-        /// </summary>
-        /// <param name="str">String</param>
-        /// <param name="index">Start Index</param>
-        /// <param name="length">Length</param>
-        /// <param name="replace">Replacement Value</param>
-        /// <returns></returns>
-        public string ReplaceAt(string str, int index, int length, string replace)
-        {
-            _logger.TraceMethodEntry();
-
-            return str
-                .Remove(index, Math.Min(length, str.Length - index))
-                .Insert(index, replace);
         }
 
         /// <summary>
