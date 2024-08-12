@@ -20,6 +20,8 @@ namespace SqliteFulltextSearch.Api.Infrastructure.Errors
             } 
             catch(Exception e)
             {
+                _logger.LogError(e, "Processing the request failed with an exception");
+
                 return _exceptionToErrorMapper.CreateApplicationErrorResult(context.HttpContext, e);
             }
         }

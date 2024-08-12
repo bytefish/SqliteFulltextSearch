@@ -12,6 +12,7 @@ using SqliteFulltextSearch.Shared.Constants;
 using SqliteFulltextSearch.Shared.Models;
 using System.Diagnostics;
 using System.Text.Json;
+using System.Globalization;
 
 namespace SqliteFulltextSearch.Api.Services
 {
@@ -59,6 +60,7 @@ namespace SqliteFulltextSearch.Api.Services
                 SELECT json_group_array(
                     json_object(
                         'document_id', document.document_id,
+                        'title', document.title,
                         'filename', document.filename,
                         'row_version', document.row_version,
                         'last_edited_by', document.last_edited_by,
@@ -98,10 +100,13 @@ namespace SqliteFulltextSearch.Api.Services
                 FROM documents_cte
                     INNER JOIN document document ON documents_cte.document_id = document.document_id";
 
+            // Escape the FTS Query
+            var escapedFtsQuery = FtsEscape(query);
+
             // Set the Query as a Parameter to avoid SQL Injections
             var parameters = new[]
             {
-                new SqliteParameter("@query", $"{{title content}}: {query}"),
+                new SqliteParameter("@query", $"{{title content}}: {escapedFtsQuery}*"),
                 new SqliteParameter("@highlightStartTag", SqliteConstants.Highlighter.HighlightStartTag),
                 new SqliteParameter("@highlightEndTag", SqliteConstants.Highlighter.HighlightEndTag),
             };
@@ -133,7 +138,7 @@ namespace SqliteFulltextSearch.Api.Services
                 };
             }
 
-            var matches = JsonSerializer.Deserialize<List<DocumentSearchDto>>(json);
+            var matches = JsonSerializer.Deserialize<List<SearchQueryResultDto>>(json);
 
             if (matches == null)
             {
@@ -201,10 +206,13 @@ namespace SqliteFulltextSearch.Api.Services
                 FROM suggestions_cte
                     INNER JOIN suggestion ON suggestions_cte.suggestion_id = suggestion.suggestion_id";
 
+            // Escape the Query
+            var escapedFtsQuery = FtsEscape(query);
+
             // Set the Query as a Parameter to avoid SQL Injections
             var parameters = new[]
             {
-                new SqliteParameter("@query", $"{{name}}: {query}"),
+                new SqliteParameter("@query", $"{{name}}: {escapedFtsQuery}*"),
                 new SqliteParameter("@highlightStartTag", SqliteConstants.Highlighter.HighlightStartTag),
                 new SqliteParameter("@highlightEndTag", SqliteConstants.Highlighter.HighlightEndTag),
 
@@ -234,7 +242,7 @@ namespace SqliteFulltextSearch.Api.Services
                 };
             }
 
-            var suggestions = JsonSerializer.Deserialize<List<SuggestionDto>>(json);
+            var suggestions = JsonSerializer.Deserialize<List<SuggestQueryResultDto>>(json);
 
             if (suggestions == null)
             {
@@ -257,7 +265,7 @@ namespace SqliteFulltextSearch.Api.Services
         /// <param name="query">Query Text</param>
         /// <param name="searchResponse">Raw Search Response</param>
         /// <returns>Converted Search Suggestions</returns>
-        private SearchSuggestions ConvertToSearchSuggestions(string query, long tookInMilliseconds, List<SuggestionDto> suggestions)
+        private SearchSuggestions ConvertToSearchSuggestions(string query, long tookInMilliseconds, List<SuggestQueryResultDto> suggestions)
         {
             _logger.TraceMethodEntry();
 
@@ -274,7 +282,7 @@ namespace SqliteFulltextSearch.Api.Services
         /// </summary>
         /// <param name="searchResponse">Raw Elasticsearch Search Response</param>
         /// <returns>Lust of Suggestions</returns>
-        private List<SearchSuggestion> GetSuggestions(List<SuggestionDto> suggestions)
+        private List<SearchSuggestion> GetSuggestions(List<SuggestQueryResultDto> suggestions)
         {
             _logger.TraceMethodEntry();
 
@@ -293,12 +301,12 @@ namespace SqliteFulltextSearch.Api.Services
         }
 
         /// <summary>
-        /// Converts a raw <see cref="SearchResponse{TDocument}"/> to <see cref="SearchResults"/>.
+        /// Converts the <see cref="SearchQueryResultDto"/> to <see cref="SearchResults"/>.
         /// </summary>
         /// <param name="query">Original Query</param>
         /// <param name="searchResponse">Search Response from Elasticsearch</param>
         /// <returns>Search Results for a given Query</returns>
-        private SearchResults ConvertToSearchResults(string query, int total, int from, int size, long tookInMilliseconds, List<DocumentSearchDto> documents)
+        private SearchResults ConvertToSearchResults(string query, int total, int from, int size, long tookInMilliseconds, List<SearchQueryResultDto> documents)
         {
             _logger.TraceMethodEntry();
 
@@ -345,6 +353,13 @@ namespace SqliteFulltextSearch.Api.Services
                 TookInMilliseconds = tookInMilliseconds,
                 Results = searchResults
             };
+        }
+
+        private string FtsEscape(string text)
+        {
+            var replaceQuotes = text.Replace("\"", "\"\"");
+
+            return $"\"{replaceQuotes}\"";
         }
     }
 }
