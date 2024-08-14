@@ -62,39 +62,16 @@ namespace SqliteFulltextSearch.Api.Services
                         'document_id', document.document_id,
                         'title', document.title,
                         'filename', document.filename,
-                        'row_version', document.row_version,
-                        'last_edited_by', document.last_edited_by,
-                        'valid_from', document.valid_from,
-                        'valid_to', document.valid_to,
                         'keywords', (
-                            SELECT json_group_array(json_object(
-                                'keyword_id', k.keyword_id, 
-                                'name', k.name, 
-                                'row_version', k.row_version, 
-                                'last_edited_by', k.last_edited_by, 
-                                'valid_from', k.valid_from, 
-                                'valid_to', k.valid_to))
+                            SELECT 
+                                json_group_array(k.name)
                             FROM document_keyword dk
                                 INNER JOIN keyword k on dk.keyword_id = k.keyword_id
                             WHERE 
                                 dk.document_id = documents_cte.document_id
                          ),
-                         'suggestions', (
-                            SELECT json_group_array(json_object(
-                                'suggestion_id', s.suggestion_id, 
-                                'name', s.name, 
-                                'row_version', s.row_version, 
-                                'last_edited_by', s.last_edited_by, 
-                                'valid_from', s.valid_from, 
-                                'valid_to', s.valid_to))
-                            FROM document_suggestion ds
-                                INNER JOIN suggestion s on ds.suggestion_id = s.suggestion_id
-                            WHERE 
-                                ds.document_id = documents_cte.document_id
-                         ),
-                         'matches', json_object(
-                            'title', documents_cte.match_title, 
-                            'content', documents_cte.match_content)
+                         'match_title', documents_cte.match_title, 
+                         'match_content', documents_cte.match_content
                     )
                 ) value
                 FROM documents_cte
@@ -185,7 +162,7 @@ namespace SqliteFulltextSearch.Api.Services
                 WITH suggestions_cte AS 
                 (
                     SELECT s.rowid suggestion_id, 
-                        highlight(s.fts_suggestion, 0, @highlightStartTag, @highlightEndTag) match_suggestion
+                        highlight(s.fts_suggestion, 0, @highlightStartTag, @highlightEndTag) highlight
                     FROM 
                         fts_suggestion s
                     WHERE 
@@ -194,13 +171,8 @@ namespace SqliteFulltextSearch.Api.Services
                 ) 
                 SELECT json_group_array(
                     json_object(
-                        'suggestion_id', suggestion.suggestion_id,
                         'name', suggestion.name,
-                        'highlight', suggestions_cte.match_suggestion,
-                        'row_version', suggestion.row_version,
-                        'last_edited_by', suggestion.last_edited_by,
-                        'valid_from', suggestion.valid_from,
-                        'valid_to', suggestion.valid_to
+                        'highlight', suggestions_cte.highlight
                     )
                 )  value
                 FROM suggestions_cte
@@ -329,16 +301,14 @@ namespace SqliteFulltextSearch.Api.Services
             {
                 var searchResult = new SearchResult
                 {
-                    Identifier = document.Id.ToString(),
+                    Identifier = document.DocumentId.ToString(),
                     Title = document.Title,
                     Filename = document.Filename,
-                    Keywords = document.Keywords
-                        .Select(x => x.Name)
-                        .ToList(),
+                    Keywords = document.Keywords,
                     Matches = [
-                        document.Match.Content
+                        document.MatchContent
                     ],
-                    Url = $"{_options.BaseUri}/download/{document.Id}"
+                    Url = $"{_options.BaseUri}/download/{document.DocumentId}"
                 };
 
                 searchResults.Add(searchResult);
