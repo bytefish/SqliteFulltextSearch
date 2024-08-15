@@ -306,7 +306,6 @@ namespace SqliteFulltextSearch.Api.Services
         /// <returns>List of Suggestions associated with a Document</returns>
         private async Task<List<Suggestion>> GetSuggestionsByDocumentId(ApplicationDbContext context, int documentId, CancellationToken cancellationToken)
         {
-            // Join Documents, DocumentSuggestions and Suggestions
             var suggestionQueryable = from document in context.Documents
                                       join documentSuggestion in context.DocumentSuggestions
                                           on document.Id equals documentSuggestion.DocumentId

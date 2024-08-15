@@ -1,8 +1,3 @@
--- Sample Data
-INSERT INTO user(user_id, email, preferred_name, last_edited_by) 
-    VALUES 
-        (1, 'philipp@bytefish.de', 'Data Conversion User', 1);
-
 -- Document "Machine Learning with OpenCV"
 INSERT INTO 
     document(document_id, title, filename, last_edited_by)
@@ -141,11 +136,7 @@ SELECT json_group_array(
     json_object(
         'suggestion_id', suggestion.suggestion_id,
         'name', suggestion.name,
-        'highlight', suggestions_cte.match_suggestion,
-        'row_version', suggestion.row_version,
-        'last_edited_by', suggestion.last_edited_by,
-        'valid_from', suggestion.valid_from,
-        'valid_to', suggestion.valid_to
+        'highlight', suggestions_cte.match_suggestion
     )
 )
 FROM suggestions_cte
@@ -160,25 +151,20 @@ WITH documents_cte AS
     FROM 
         fts_document f
     WHERE 
-        f.fts_document MATCH '{title content}: and' 
+        f.fts_document MATCH '{title content}: Ma*' 
     ORDER BY f.rank
 ) 
 SELECT json_group_array(
     json_object(
         'document_id', document.document_id,
+        'title', document.title,
         'filename', document.filename,
-        'row_version', document.row_version,
-        'last_edited_by', document.last_edited_by,
-        'valid_from', document.valid_from,
-        'valid_to', document.valid_to,
+        'match_title', documents_cte.match_title, 
+        'match_content', documents_cte.match_content,
         'keywords', (
             SELECT json_group_array(json_object(
                 'keyword_id', k.keyword_id, 
-                'name', k.name, 
-                'row_version', k.row_version, 
-                'last_edited_by', k.last_edited_by, 
-                'valid_from', k.valid_from, 
-                'valid_to', k.valid_to))
+                'name', k.name))
             FROM document_keyword dk
                 INNER JOIN keyword k on dk.keyword_id = k.keyword_id
             WHERE 
@@ -187,19 +173,12 @@ SELECT json_group_array(
          'suggestions', (
             SELECT json_group_array(json_object(
                 'suggestion_id', s.suggestion_id, 
-                'name', s.name, 
-                'row_version', s.row_version, 
-                'last_edited_by', s.last_edited_by, 
-                'valid_from', s.valid_from, 
-                'valid_to', s.valid_to))
+                'name', s.name))
             FROM document_suggestion ds
                 INNER JOIN suggestion s on ds.suggestion_id = s.suggestion_id
             WHERE 
                 ds.document_id = documents_cte.document_id
-         ),
-         'matches', json_object(
-            'title', documents_cte.match_title, 
-            'content', documents_cte.match_content)
+         )
     )
 )
 FROM documents_cte
