@@ -43,7 +43,6 @@ CREATE TABLE IF NOT EXISTS document (
     CONSTRAINT document_last_edited_by_fkey 
         FOREIGN KEY (last_edited_by)
         REFERENCES user(user_id)
-
 );
 
 CREATE TABLE IF NOT EXISTS keyword (
